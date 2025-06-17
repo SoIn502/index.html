@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>كرتك العشوائي</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    img { max-width: 300px; height: auto; }
+    .card-text { font-size: 24px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>هذا كرتك</h1>
+  <img id="cardImage" src="" alt="كرت عشوائي" />
+  <div class="card-text" id="cardText"></div>
+
+  <script>
+    const cards = [
+      { img: "https://via.placeholder.com/300x200?text=Card+1", text: "كرت رقم 1" },
+      { img: "https://via.placeholder.com/300x200?text=Card+2", text: "كرت رقم 2" },
+      { img: "https://via.placeholder.com/300x200?text=Card+3", text: "كرت رقم 3" },
+      { img: "https://via.placeholder.com/300x200?text=Card+4", text: "كرت رقم 4" }
+    ];
+
+    function showRandomCard() {
+      const randomIndex = Math.floor(Math.random() * cards.length);
+      const card = cards[randomIndex];
+      document.getElementById('cardImage').src = card.img;
+      document.getElementById('cardText').textContent = card.text;
+    }
+
+    showRandomCard();
+  </script>
+</body>
+</html>
