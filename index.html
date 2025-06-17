@@ -1,296 +1,134 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8" />
-<title>لعبة مافيا مع مراحل</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #111;
-    color: #eee;
-    text-align: center;
-    padding: 20px;
-    direction: rtl;
-  }
-  input, button {
-    padding: 10px;
-    font-size: 16px;
-    margin: 5px;
-    border-radius: 5px;
-    border: none;
-  }
-  #nameList div {
-    margin: 5px 0;
-    font-weight: bold;
-  }
-  .card, #gameArea {
-    background: #222;
-    border-radius: 10px;
-    margin: 20px auto;
-    padding: 15px;
-    max-width: 400px;
-  }
-  button {
-    cursor: pointer;
-  }
-  #voteSection div {
-    margin: 8px 0;
-  }
-  #endMessage {
-    font-size: 24px;
-    color: #f55;
-    font-weight: bold;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لعبة المافيا</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    #game-container {
+      background: rgba(0,0,0,0.7);
+      padding: 20px;
+      border-radius: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+    input, button, textarea {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 10px;
+      border: none;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
+  <div id="game-container">
+    <h1>لعبة المافيا</h1>
+    <div id="input-section">
+      <input type="text" id="playerName" placeholder="ادخل اسم اللاعب" />
+      <button onclick="addName()">إضافة</button>
+      <button onclick="startGame()">ابدأ اللعبة</button>
+      <ul id="nameList"></ul>
+    </div>
 
-<h1>لعبة مافيا - النسخة المبسطة</h1>
-
-<div id="inputSection">
-  <input type="text" id="nameInput" placeholder="أدخل اسم اللاعب" />
-  <button onclick="addName()">أضف الاسم</button>
-  <button onclick="startGame()">ابدأ اللعبة</button>
-  <div id="nameList"></div>
-</div>
-
-<div id="gameArea" style="display:none;">
-  <div id="status"></div>
-  
-  <div id="currentPlayer" style="margin-top:20px;">
-    <strong>اللاعب الحالي:</strong> <span id="playerName"></span><br/>
-    <button id="revealRoleBtn" onclick="revealRole()">كشف الدور</button>
-    <div id="playerRole" style="margin-top:10px; font-size:18px;"></div>
-    <button id="nextPlayerBtn" onclick="nextPlayer()" style="margin-top:15px;">التالي</button>
+    <div id="game-section" style="display:none">
+      <h2 id="currentPlayer"></h2>
+      <button onclick="revealRole()">كشف الدور</button>
+      <p id="roleDisplay"></p>
+      <button onclick="nextPlayer()">التالي</button>
+      <p id="status"></p>
+    </div>
   </div>
 
-  <div id="voteSection" style="margin-top:30px; display:none;">
-    <h3>وقت التصويت - اختر من تريد تصويته</h3>
-    <div id="voteOptions"></div>
-    <button onclick="endVoting()" style="margin-top:15px;">انهاء التصويت</button>
-  </div>
+  <audio id="thunder" src="https://www.soundjay.com/nature/thunder-01.mp3"></audio>
+  <audio id="rain" src="https://www.soundjay.com/nature/rain-01.mp3" loop></audio>
 
-  <button id="endGameBtn" onclick="endGame()" style="display:none; margin-top:20px;">إنهاء اللعبة</button>
+  <script>
+    const names = [];
+    let roles = [];
+    let currentIndex = 0;
+    let phase = 'assign';
 
-  <div id="endMessage"></div>
-</div>
-
-<audio id="thunderSound" src="https://actions.google.com/sounds/v1/nature/thunder_crack.ogg"></audio>
-<audio id="rainSound" src="https://actions.google.com/sounds/v1/weather/rain_light.ogg" loop></audio>
-
-<script>
-const names = [];
-const rolesTemplates = {
-  mafia: {name: "مافيا", desc: "هدفك القضاء على المواطنين بدون ما يُكشف"},
-  shayeb: {name: "الشايب", desc: "دور خاص بدلاً من الشرطي، يقدر يساعد في كشف المافيا"},
-  citizen: {name: "مواطن", desc: "مدني عادي يحاول ينجو ويكشف المافيا"},
-  jokester: {name: "مقلبتك يابوي", desc: "يقدر يرجع أي شخص مات للحياة مرة واحدة"},
-  sniper: {name: "قناص", desc: "يقدر يذبح أي شخص يشك فيه في أي وقت"}
-};
-
-let assignedRoles = new Map();
-let currentIndex = 0;
-let phase = 'assign';
-let deadPlayers = new Set();
-let revivedOnce = false;
-let voteCounts = {};
-let votesCast = 0;
-let totalPlayers = 0;
-let mafiaCount = 0;
-
-function addName() {
-  const input = document.getElementById("nameInput");
-  const name = input.value.trim();
-  if(name && !names.includes(name)) {
-    names.push(name);
-    document.getElementById("nameList").innerHTML += `<div>${name}</div>`;
-    input.value = "";
-  } else {
-    alert("الاسم موجود أو فارغ");
-  }
-}
-
-function startGame() {
-  if(names.length < 4) {
-    alert("ادخل على الأقل 4 لاعبين");
-    return;
-  }
-  totalPlayers = names.length;
-  mafiaCount = Math.floor(totalPlayers / 4);
-  if(mafiaCount < 1) mafiaCount = 1;
-
-  let roles = [];
-  for(let i=0; i<mafiaCount; i++) roles.push(rolesTemplates.mafia);
-  roles.push(rolesTemplates.shayeb, rolesTemplates.jokester, rolesTemplates.sniper);
-  while(roles.length < totalPlayers) roles.push(rolesTemplates.citizen);
-  shuffleArray(roles);
-
-  assignedRoles.clear();
-  for(let i=0; i<names.length; i++) {
-    assignedRoles.set(names[i], roles[i]);
-  }
-
-  phase = 'assign';
-  currentIndex = 0;
-  document.getElementById("inputSection").style.display = "none";
-  document.getElementById("gameArea").style.display = "block";
-  document.getElementById("status").textContent = "توزيع الأدوار - اكشف دور كل لاعب";
-  showCurrentPlayer();
-}
-
-function showCurrentPlayer() {
-  const playerNameSpan = document.getElementById("playerName");
-  const playerRoleDiv = document.getElementById("playerRole");
-  playerNameSpan.textContent = names[currentIndex];
-  playerRoleDiv.textContent = "";
-  document.getElementById("revealRoleBtn").style.display = "inline-block";
-  document.getElementById("nextPlayerBtn").style.display = "none";
-}
-
-function revealRole() {
-  const playerName = names[currentIndex];
-  const role = assignedRoles.get(playerName);
-  document.getElementById("playerRole").innerHTML = `<strong>${role.name}</strong><br>${role.desc}`;
-  document.getElementById("revealRoleBtn").style.display = "none";
-  document.getElementById("nextPlayerBtn").style.display = "inline-block";
-}
-
-function nextPlayer() {
-  if (phase === 'assign' && currentIndex >= names.length - 1) {
-    playThunderAndRain(() => {
-      phase = 'night';
-      document.getElementById("status").textContent = "ليلية الساعة 11 - استعد";
-      currentIndex = 0;
-      nextPhase();
-    });
-    return;
-  }
-  currentIndex++;
-  showCurrentPlayer();
-}
-
-function playThunderAndRain(callback) {
-  const thunder = document.getElementById("thunderSound");
-  const rain = document.getElementById("rainSound");
-  thunder.play();
-  thunder.onended = () => {
-    rain.play();
-    setTimeout(() => {
-      rain.pause();
-      if(callback) callback();
-    }, 4000);
-  };
-}
-
-function nextPhase() {
-  if(phase === 'night') {
-    phase = 'day';
-    document.getElementById("status").textContent = "النهار - حان وقت التصويت";
-    startVoting();
-  } else if(phase === 'day') {
-    phase = 'voting';
-    document.getElementById("status").textContent = "وقت التصويت - صوّت لطرد لاعب";
-    showVotingOptions();
-  } else if(phase === 'voting') {
-    tallyVotes();
-  }
-}
-
-function showVotingOptions() {
-  const voteSection = document.getElementById("voteSection");
-  voteSection.style.display = "block";
-  const voteOptionsDiv = document.getElementById("voteOptions");
-  voteOptionsDiv.innerHTML = "";
-  voteCounts = {};
-  votesCast = 0;
-
-  names.forEach(name => {
-    if(!deadPlayers.has(name)) {
-      voteCounts[name] = 0;
-      voteOptionsDiv.innerHTML += `
-        <div>
-          <input type="radio" name="vote" value="${name}" id="vote_${name}" />
-          <label for="vote_${name}">${name}</label>
-        </div>
-      `;
+    function addName() {
+      const name = document.getElementById("playerName").value.trim();
+      if (name) {
+        names.push(name);
+        const li = document.createElement("li");
+        li.textContent = name;
+        document.getElementById("nameList").appendChild(li);
+        document.getElementById("playerName").value = "";
+      }
     }
-  });
-}
 
-function endVoting() {
-  const selected = document.querySelector('input[name="vote"]:checked');
-  if(!selected) {
-    alert("يجب اختيار لاعب للتصويت");
-    return;
-  }
-  const votedName = selected.value;
-  voteCounts[votedName]++;
-  votesCast++;
-  tallyVotes();
-}
-
-function tallyVotes() {
-  let maxVotes = 0;
-  let playerToRemove = null;
-
-  for(const [player, count] of Object.entries(voteCounts)) {
-    if(count > maxVotes) {
-      maxVotes = count;
-      playerToRemove = player;
+    function startGame() {
+      if (names.length < 3) {
+        alert("أدخل 3 لاعبين على الأقل");
+        return;
+      }
+      assignRoles();
+      document.getElementById("input-section").style.display = "none";
+      document.getElementById("game-section").style.display = "block";
+      showCurrentPlayer();
     }
-  }
 
-  if(playerToRemove) {
-    deadPlayers.add(playerToRemove);
-    document.getElementById("status").textContent = `تم طرد اللاعب: ${playerToRemove} - دوره كان: ${assignedRoles.get(playerToRemove).name}`;
-    checkWinCondition();
-  }
-
-  document.getElementById("voteSection").style.display = "none";
-  phase = 'night';
-  currentIndex = 0;
-  setTimeout(() => {
-    document.getElementById("status").textContent = "ليلية الساعة 11 - استعد";
-    nextPhase();
-  }, 3000);
-}
-
-function checkWinCondition() {
-  let aliveMafia = 0;
-  let aliveCitizens = 0;
-  names.forEach(name => {
-    if(!deadPlayers.has(name)) {
-      if(assignedRoles.get(name).name === "مافيا") aliveMafia++;
-      else aliveCitizens++;
+    function assignRoles() {
+      const rolesList = ["مافيا", "مافيا", "الشايب", "قناص", "مقلبتك يابوي"];
+      while (rolesList.length < names.length) rolesList.push("مدني");
+      roles = shuffle(rolesList).slice(0, names.length);
     }
-  });
 
-  if(aliveMafia === 0) {
-    endGame("فاز المواطنون!");
-    return;
-  }
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
 
-  if(aliveMafia >= aliveCitizens) {
-    endGame("فاز المافيا!");
-    return;
-  }
-}
+    function showCurrentPlayer() {
+      document.getElementById("currentPlayer").textContent = `الدور على: ${names[currentIndex]}`;
+      document.getElementById("roleDisplay").textContent = "";
+    }
 
-function endGame(message="تم إنهاء اللعبة.") {
-  phase = 'ended';
-  document.getElementById("endMessage").textContent = message;
-  document.getElementById("endGameBtn").style.display = "none";
-  document.getElementById("voteSection").style.display = "none";
-  document.getElementById("currentPlayer").style.display = "none";
-}
+    function revealRole() {
+      const role = roles[currentIndex];
+      document.getElementById("roleDisplay").textContent = `دورك هو: ${role}`;
+    }
 
-function shuffleArray(array) {
-  for(let i = array.length -1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i +1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-</script>
+    function nextPlayer() {
+      if (phase === 'assign' && currentIndex >= names.length - 1) {
+        playThunderAndRain(() => {
+          phase = 'night';
+          document.getElementById("status").textContent = "ليلية الساعة 11 - استعد";
+          currentIndex = 0;
+          // تبدأ مرحلة التصويت أو الأحداث هنا
+        });
+        return;
+      }
+      currentIndex++;
+      if (currentIndex < names.length) {
+        showCurrentPlayer();
+      }
+    }
 
+    function playThunderAndRain(callback) {
+      const thunder = document.getElementById("thunder");
+      const rain = document.getElementById("rain");
+      thunder.play();
+      setTimeout(() => {
+        rain.play();
+        callback();
+      }, 2000);
+    }
+  </script>
 </body>
 </html>
