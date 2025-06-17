@@ -1,35 +1,160 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <title>كرتك العشوائي</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    img { max-width: 300px; height: auto; }
-    .card-text { font-size: 24px; margin-top: 20px; }
-  </style>
+<meta charset="UTF-8" />
+<title>توزيع الكروت خطوة بخطوة</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    text-align: center;
+    padding: 20px;
+    direction: rtl;
+  }
+  input, button {
+    padding: 10px;
+    font-size: 16px;
+    margin: 5px;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid #ccc;
+    margin: 20px auto;
+    padding: 15px;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  #nameList div {
+    margin: 5px 0;
+    font-weight: bold;
+  }
+  #endMessage {
+    font-size: 20px;
+    margin-top: 20px;
+    color: red;
+    font-weight: bold;
+  }
+</style>
 </head>
 <body>
-  <h1>هذا كرتك</h1>
-  <img id="cardImage" src="" alt="كرت عشوائي" />
-  <div class="card-text" id="cardText"></div>
 
-  <script>
-    const cards = [
-      { img: "https://via.placeholder.com/300x200?text=Card+1", text: "كرت رقم 1" },
-      { img: "https://via.placeholder.com/300x200?text=Card+2", text: "كرت رقم 2" },
-      { img: "https://via.placeholder.com/300x200?text=Card+3", text: "كرت رقم 3" },
-      { img: "https://via.placeholder.com/300x200?text=Card+4", text: "كرت رقم 4" }
-    ];
+<h1>توزيع الكروت خطوة بخطوة</h1>
 
-    function showRandomCard() {
-      const randomIndex = Math.floor(Math.random() * cards.length);
-      const card = cards[randomIndex];
-      document.getElementById('cardImage').src = card.img;
-      document.getElementById('cardText').textContent = card.text;
+<div id="inputSection">
+  <input type="text" id="nameInput" placeholder="أدخل اسم الشخص" />
+  <button onclick="addName()">أضف الاسم</button>
+  <button onclick="startGame()">التالي</button>
+  <div id="nameList"></div>
+</div>
+
+<div id="gameSection" style="display:none;">
+  <div class="card" id="currentPlayerCard">
+    <div id="playerName" style="font-weight:bold; font-size:22px; margin-bottom:10px;"></div>
+    <button id="revealBtn" onclick="revealCard()">كشف الكرت</button>
+    <div id="playerCard" style="margin-top:15px; font-size:20px; color:#333;"></div>
+  </div>
+  <button id="nextPlayerBtn" onclick="nextPlayer()" style="display:none; margin-top:20px;">التالي</button>
+  <button id="endBtn" onclick="endGame()" style="display:none; margin-top:20px;">إنهاء اللعبة</button>
+  <div id="endMessage"></div>
+</div>
+
+<script>
+  const names = [];
+  const cards = [
+    "🃏 كرت الجوكر",
+    "♥ كرت القلب",
+    "♠ كرت السيف",
+    "♦ كرت الماس",
+    "♣ كرت الزهر",
+    "🎴 كرت خاص",
+    "🔮 كرت الغموض",
+    "🔥 كرت النار"
+  ];
+
+  let assignedCards = new Map(); // لتخزين اسم + كرت
+  let currentIndex = 0;
+
+  function addName() {
+    const input = document.getElementById("nameInput");
+    const name = input.value.trim();
+    if(name) {
+      names.push(name);
+      const nameList = document.getElementById("nameList");
+      nameList.innerHTML += `<div>${name}</div>`;
+      input.value = "";
+    }
+  }
+
+  function startGame() {
+    if(names.length === 0) {
+      alert("أدخل على الأقل اسم واحد!");
+      return;
+    }
+    if(names.length > cards.length) {
+      alert(`عدد الأسماء أكبر من عدد الكروت المتوفرة (${cards.length})`);
+      return;
     }
 
-    showRandomCard();
-  </script>
+    document.getElementById("inputSection").style.display = "none";
+    document.getElementById("gameSection").style.display = "block";
+
+    // خلط الكروت عشوائياً
+    shuffleArray(cards);
+
+    // تعيين كرت لكل اسم بدون تكرار
+    assignedCards.clear();
+    for(let i = 0; i < names.length; i++) {
+      assignedCards.set(names[i], cards[i]);
+    }
+
+    currentIndex = 0;
+    showCurrentPlayer();
+  }
+
+  function showCurrentPlayer() {
+    const playerNameDiv = document.getElementById("playerName");
+    const playerCardDiv = document.getElementById("playerCard");
+    playerNameDiv.textContent = names[currentIndex];
+    playerCardDiv.textContent = "";
+    document.getElementById("revealBtn").style.display = "inline-block";
+    document.getElementById("nextPlayerBtn").style.display = "none";
+  }
+
+  function revealCard() {
+    const playerCardDiv = document.getElementById("playerCard");
+    const playerName = names[currentIndex];
+    playerCardDiv.textContent = assignedCards.get(playerName);
+    document.getElementById("revealBtn").style.display = "none";
+    document.getElementById("nextPlayerBtn").style.display = "inline-block";
+  }
+
+  function nextPlayer() {
+    currentIndex++;
+    if(currentIndex >= names.length) {
+      // انتهى الكل
+      document.getElementById("currentPlayerCard").style.display = "none";
+      document.getElementById("nextPlayerBtn").style.display = "none";
+      document.getElementById("endBtn").style.display = "inline-block";
+    } else {
+      showCurrentPlayer();
+    }
+  }
+
+  function endGame() {
+    document.getElementById("endMessage").textContent = "تم إنهاء اللعبة. شكرًا للمشاركة!";
+    document.getElementById("endBtn").style.display = "none";
+  }
+
+  // دالة خلط المصفوفة (Fisher-Yates shuffle)
+  function shuffleArray(array) {
+    for(let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+</script>
+
 </body>
 </html>
