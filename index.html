@@ -2,11 +2,12 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8" />
-<title>توزيع الكروت خطوة بخطوة</title>
+<title>لعبة مافيا مع مراحل</title>
 <style>
   body {
     font-family: Arial, sans-serif;
-    background-color: #f0f8ff;
+    background-color: #111;
+    color: #eee;
     text-align: center;
     padding: 20px;
     direction: rtl;
@@ -15,145 +16,280 @@
     padding: 10px;
     font-size: 16px;
     margin: 5px;
-  }
-  .card {
-    background: #fff;
-    border: 1px solid #ccc;
-    margin: 20px auto;
-    padding: 15px;
-    width: 300px;
-    border-radius: 10px;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-    text-align: center;
+    border-radius: 5px;
+    border: none;
   }
   #nameList div {
     margin: 5px 0;
     font-weight: bold;
   }
+  .card, #gameArea {
+    background: #222;
+    border-radius: 10px;
+    margin: 20px auto;
+    padding: 15px;
+    max-width: 400px;
+  }
+  button {
+    cursor: pointer;
+  }
+  #voteSection div {
+    margin: 8px 0;
+  }
   #endMessage {
-    font-size: 20px;
-    margin-top: 20px;
-    color: red;
+    font-size: 24px;
+    color: #f55;
     font-weight: bold;
   }
 </style>
 </head>
 <body>
 
-<h1>توزيع الكروت خطوة بخطوة</h1>
+<h1>لعبة مافيا - النسخة المبسطة</h1>
 
 <div id="inputSection">
-  <input type="text" id="nameInput" placeholder="أدخل اسم الشخص" />
+  <input type="text" id="nameInput" placeholder="أدخل اسم اللاعب" />
   <button onclick="addName()">أضف الاسم</button>
-  <button onclick="startGame()">التالي</button>
+  <button onclick="startGame()">ابدأ اللعبة</button>
   <div id="nameList"></div>
 </div>
 
-<div id="gameSection" style="display:none;">
-  <div class="card" id="currentPlayerCard">
-    <div id="playerName" style="font-weight:bold; font-size:22px; margin-bottom:10px;"></div>
-    <button id="revealBtn" onclick="revealCard()">كشف الكرت</button>
-    <div id="playerCard" style="margin-top:15px; font-size:20px; color:#333;"></div>
+<div id="gameArea" style="display:none;">
+  <div id="status"></div>
+  
+  <div id="currentPlayer" style="margin-top:20px;">
+    <strong>اللاعب الحالي:</strong> <span id="playerName"></span><br/>
+    <button id="revealRoleBtn" onclick="revealRole()">كشف الدور</button>
+    <div id="playerRole" style="margin-top:10px; font-size:18px;"></div>
+    <button id="nextPlayerBtn" onclick="nextPlayer()" style="margin-top:15px;">التالي</button>
   </div>
-  <button id="nextPlayerBtn" onclick="nextPlayer()" style="display:none; margin-top:20px;">التالي</button>
-  <button id="endBtn" onclick="endGame()" style="display:none; margin-top:20px;">إنهاء اللعبة</button>
+
+  <div id="voteSection" style="margin-top:30px; display:none;">
+    <h3>وقت التصويت - اختر من تريد تصويته</h3>
+    <div id="voteOptions"></div>
+    <button onclick="endVoting()" style="margin-top:15px;">انهاء التصويت</button>
+  </div>
+
+  <button id="endGameBtn" onclick="endGame()" style="display:none; margin-top:20px;">إنهاء اللعبة</button>
+
   <div id="endMessage"></div>
 </div>
 
+<audio id="thunderSound" src="https://actions.google.com/sounds/v1/nature/thunder_crack.ogg"></audio>
+<audio id="rainSound" src="https://actions.google.com/sounds/v1/weather/rain_light.ogg" loop></audio>
+
 <script>
-  const names = [];
-  const cards = [
-    "🃏 كرت الجوكر",
-    "♥ كرت القلب",
-    "♠ كرت السيف",
-    "♦ كرت الماس",
-    "♣ كرت الزهر",
-    "🎴 كرت خاص",
-    "🔮 كرت الغموض",
-    "🔥 كرت النار"
-  ];
+const names = [];
+const rolesTemplates = {
+  mafia: {name: "مافيا", desc: "هدفك القضاء على المواطنين بدون ما يُكشف"},
+  shayeb: {name: "الشايب", desc: "دور خاص بدلاً من الشرطي، يقدر يساعد في كشف المافيا"},
+  citizen: {name: "مواطن", desc: "مدني عادي يحاول ينجو ويكشف المافيا"},
+  jokester: {name: "مقلبتك يابوي", desc: "يقدر يرجع أي شخص مات للحياة مرة واحدة"},
+  sniper: {name: "قناص", desc: "يقدر يذبح أي شخص يشك فيه في أي وقت"}
+};
 
-  let assignedCards = new Map(); // لتخزين اسم + كرت
-  let currentIndex = 0;
+let assignedRoles = new Map();
+let currentIndex = 0;
+let phase = 'assign';
+let deadPlayers = new Set();
+let revivedOnce = false;
+let voteCounts = {};
+let votesCast = 0;
+let totalPlayers = 0;
+let mafiaCount = 0;
 
-  function addName() {
-    const input = document.getElementById("nameInput");
-    const name = input.value.trim();
-    if(name) {
-      names.push(name);
-      const nameList = document.getElementById("nameList");
-      nameList.innerHTML += `<div>${name}</div>`;
-      input.value = "";
+function addName() {
+  const input = document.getElementById("nameInput");
+  const name = input.value.trim();
+  if(name && !names.includes(name)) {
+    names.push(name);
+    document.getElementById("nameList").innerHTML += `<div>${name}</div>`;
+    input.value = "";
+  } else {
+    alert("الاسم موجود أو فارغ");
+  }
+}
+
+function startGame() {
+  if(names.length < 4) {
+    alert("ادخل على الأقل 4 لاعبين");
+    return;
+  }
+  totalPlayers = names.length;
+  mafiaCount = Math.floor(totalPlayers / 4);
+  if(mafiaCount < 1) mafiaCount = 1;
+
+  let roles = [];
+  for(let i=0; i<mafiaCount; i++) roles.push(rolesTemplates.mafia);
+  roles.push(rolesTemplates.shayeb, rolesTemplates.jokester, rolesTemplates.sniper);
+  while(roles.length < totalPlayers) roles.push(rolesTemplates.citizen);
+  shuffleArray(roles);
+
+  assignedRoles.clear();
+  for(let i=0; i<names.length; i++) {
+    assignedRoles.set(names[i], roles[i]);
+  }
+
+  phase = 'assign';
+  currentIndex = 0;
+  document.getElementById("inputSection").style.display = "none";
+  document.getElementById("gameArea").style.display = "block";
+  document.getElementById("status").textContent = "توزيع الأدوار - اكشف دور كل لاعب";
+  showCurrentPlayer();
+}
+
+function showCurrentPlayer() {
+  const playerNameSpan = document.getElementById("playerName");
+  const playerRoleDiv = document.getElementById("playerRole");
+  playerNameSpan.textContent = names[currentIndex];
+  playerRoleDiv.textContent = "";
+  document.getElementById("revealRoleBtn").style.display = "inline-block";
+  document.getElementById("nextPlayerBtn").style.display = "none";
+}
+
+function revealRole() {
+  const playerName = names[currentIndex];
+  const role = assignedRoles.get(playerName);
+  document.getElementById("playerRole").innerHTML = `<strong>${role.name}</strong><br>${role.desc}`;
+  document.getElementById("revealRoleBtn").style.display = "none";
+  document.getElementById("nextPlayerBtn").style.display = "inline-block";
+}
+
+function nextPlayer() {
+  if (phase === 'assign' && currentIndex >= names.length - 1) {
+    playThunderAndRain(() => {
+      phase = 'night';
+      document.getElementById("status").textContent = "ليلية الساعة 11 - استعد";
+      currentIndex = 0;
+      nextPhase();
+    });
+    return;
+  }
+  currentIndex++;
+  showCurrentPlayer();
+}
+
+function playThunderAndRain(callback) {
+  const thunder = document.getElementById("thunderSound");
+  const rain = document.getElementById("rainSound");
+  thunder.play();
+  thunder.onended = () => {
+    rain.play();
+    setTimeout(() => {
+      rain.pause();
+      if(callback) callback();
+    }, 4000);
+  };
+}
+
+function nextPhase() {
+  if(phase === 'night') {
+    phase = 'day';
+    document.getElementById("status").textContent = "النهار - حان وقت التصويت";
+    startVoting();
+  } else if(phase === 'day') {
+    phase = 'voting';
+    document.getElementById("status").textContent = "وقت التصويت - صوّت لطرد لاعب";
+    showVotingOptions();
+  } else if(phase === 'voting') {
+    tallyVotes();
+  }
+}
+
+function showVotingOptions() {
+  const voteSection = document.getElementById("voteSection");
+  voteSection.style.display = "block";
+  const voteOptionsDiv = document.getElementById("voteOptions");
+  voteOptionsDiv.innerHTML = "";
+  voteCounts = {};
+  votesCast = 0;
+
+  names.forEach(name => {
+    if(!deadPlayers.has(name)) {
+      voteCounts[name] = 0;
+      voteOptionsDiv.innerHTML += `
+        <div>
+          <input type="radio" name="vote" value="${name}" id="vote_${name}" />
+          <label for="vote_${name}">${name}</label>
+        </div>
+      `;
+    }
+  });
+}
+
+function endVoting() {
+  const selected = document.querySelector('input[name="vote"]:checked');
+  if(!selected) {
+    alert("يجب اختيار لاعب للتصويت");
+    return;
+  }
+  const votedName = selected.value;
+  voteCounts[votedName]++;
+  votesCast++;
+  tallyVotes();
+}
+
+function tallyVotes() {
+  let maxVotes = 0;
+  let playerToRemove = null;
+
+  for(const [player, count] of Object.entries(voteCounts)) {
+    if(count > maxVotes) {
+      maxVotes = count;
+      playerToRemove = player;
     }
   }
 
-  function startGame() {
-    if(names.length === 0) {
-      alert("أدخل على الأقل اسم واحد!");
-      return;
+  if(playerToRemove) {
+    deadPlayers.add(playerToRemove);
+    document.getElementById("status").textContent = `تم طرد اللاعب: ${playerToRemove} - دوره كان: ${assignedRoles.get(playerToRemove).name}`;
+    checkWinCondition();
+  }
+
+  document.getElementById("voteSection").style.display = "none";
+  phase = 'night';
+  currentIndex = 0;
+  setTimeout(() => {
+    document.getElementById("status").textContent = "ليلية الساعة 11 - استعد";
+    nextPhase();
+  }, 3000);
+}
+
+function checkWinCondition() {
+  let aliveMafia = 0;
+  let aliveCitizens = 0;
+  names.forEach(name => {
+    if(!deadPlayers.has(name)) {
+      if(assignedRoles.get(name).name === "مافيا") aliveMafia++;
+      else aliveCitizens++;
     }
-    if(names.length > cards.length) {
-      alert(`عدد الأسماء أكبر من عدد الكروت المتوفرة (${cards.length})`);
-      return;
-    }
+  });
 
-    document.getElementById("inputSection").style.display = "none";
-    document.getElementById("gameSection").style.display = "block";
-
-    // خلط الكروت عشوائياً
-    shuffleArray(cards);
-
-    // تعيين كرت لكل اسم بدون تكرار
-    assignedCards.clear();
-    for(let i = 0; i < names.length; i++) {
-      assignedCards.set(names[i], cards[i]);
-    }
-
-    currentIndex = 0;
-    showCurrentPlayer();
+  if(aliveMafia === 0) {
+    endGame("فاز المواطنون!");
+    return;
   }
 
-  function showCurrentPlayer() {
-    const playerNameDiv = document.getElementById("playerName");
-    const playerCardDiv = document.getElementById("playerCard");
-    playerNameDiv.textContent = names[currentIndex];
-    playerCardDiv.textContent = "";
-    document.getElementById("revealBtn").style.display = "inline-block";
-    document.getElementById("nextPlayerBtn").style.display = "none";
+  if(aliveMafia >= aliveCitizens) {
+    endGame("فاز المافيا!");
+    return;
   }
+}
 
-  function revealCard() {
-    const playerCardDiv = document.getElementById("playerCard");
-    const playerName = names[currentIndex];
-    playerCardDiv.textContent = assignedCards.get(playerName);
-    document.getElementById("revealBtn").style.display = "none";
-    document.getElementById("nextPlayerBtn").style.display = "inline-block";
-  }
+function endGame(message="تم إنهاء اللعبة.") {
+  phase = 'ended';
+  document.getElementById("endMessage").textContent = message;
+  document.getElementById("endGameBtn").style.display = "none";
+  document.getElementById("voteSection").style.display = "none";
+  document.getElementById("currentPlayer").style.display = "none";
+}
 
-  function nextPlayer() {
-    currentIndex++;
-    if(currentIndex >= names.length) {
-      // انتهى الكل
-      document.getElementById("currentPlayerCard").style.display = "none";
-      document.getElementById("nextPlayerBtn").style.display = "none";
-      document.getElementById("endBtn").style.display = "inline-block";
-    } else {
-      showCurrentPlayer();
-    }
+function shuffleArray(array) {
+  for(let i = array.length -1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i +1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
-
-  function endGame() {
-    document.getElementById("endMessage").textContent = "تم إنهاء اللعبة. شكرًا للمشاركة!";
-    document.getElementById("endBtn").style.display = "none";
-  }
-
-  // دالة خلط المصفوفة (Fisher-Yates shuffle)
-  function shuffleArray(array) {
-    for(let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-  }
+}
 </script>
 
 </body>
