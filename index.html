@@ -1,377 +1,1264 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مين الكاذب !</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مواقيت الصلاة</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ================================= -->
+    <!-- ========= CSS CODE START ======== -->
+    <!-- ================================= -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-
+        /* --- متغيرات التصميم --- */
         :root {
-            /* Unique Color Palette based on image */
-            --bg-color: #1a0f0d;
-            --container-bg: rgba(26, 15, 13, 0.85); /* لون المربع الشفاف (تم إخفاؤه حاليًا) */
-            --primary-color: #ad8e59; /* هذا لون العنوان الرئيسي H1 وأزرار ابدأ اللعبة والتالي وإظهار الصورة */
-            --primary-hover: #ad8e59; /* هذا لون الأزرار الأساسية عند التمرير عليها */
-            --success-color: #ad8e59; /* هذا لون زر أضف */
-            --success-hover: #ad8e59; /* هذا لون زر أضف عند التمرير عليه */
-            --danger-color: #ad8e59; /* هذا لون أيقونة الحذف (X) */
-            --text-color: #ad8e59; /* هذا لون النصوص العامة في الصفحة */
-            --placeholder-color: #ad8e59; /* هذا لون النص الذي يظهر في حقل الإدخال */
+            --primary-color: #007AFF;
+            --secondary-color: #5856D6;
+            --accent-color: #FF9500;
+            --background-color: #F2F2F7;
+            --card-bg-color: #FFFFFF;
+            --text-color: #000000;
+            --text-secondary: #8E8E93;
+            --font-family: 'Cairo', sans-serif;
+            --status-bar-height: 44px;
+            --bottom-nav-height: 80px;
         }
 
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-image: url('https://i.ibb.co/Rpkcv53b/Chat-GPT-Image-12-2025-08-09-44.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+        /* --- إعدادات عامة --- */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body { 
+            font-family: var(--font-family); 
+            background-color: var(--background-color); 
+            color: var(--text-color); 
+            min-height: 100vh; 
+            overflow-x: hidden;
+            position: relative;
+            padding-top: var(--status-bar-height);
+            padding-bottom: var(--bottom-nav-height);
+        }
+
+        /* --- شريط الحالة (مثل آيفون) --- */
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--status-bar-height);
+            background-color: var(--card-bg-color);
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            text-align: center;
-            color: var(--text-color);
-            transition: background-color 0.5s ease;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar .time {
+            font-weight: 600;
+            font-size: 17px;
+        }
+        
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .status-bar .icons i {
+            font-size: 14px;
         }
 
-        .container {
-            padding: 40px;
+        /* --- الحاوية الرئيسية --- */
+        .app-container { 
+            width: 100%; 
+            max-width: 500px; 
+            margin: 0 auto;
+            background-color: var(--background-color); 
+            padding: 1rem; 
+            animation: fadeIn 0.5s ease-out; 
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* --- الهيدر --- */
+        .header { 
+            text-align: center; 
+            margin-bottom: 1.5rem; 
+            padding: 1rem;
+            background-color: var(--card-bg-color);
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            width: 90%;
-            max-width: 600px;
-            transition: transform 0.3s ease;
-        }
-
-        .container:hover {
-            transform: translateY(-8px);
-        }
-
-        h1 {
-            color: var(--primary-color); /* العنوان الرئيسي يستخدم لون --primary-color */
-            margin-bottom: 25px;
-            font-size: 2.5rem;
-        }
-
-        .input-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        #name-input {
-            flex-grow: 1;
-            padding: 15px;
-            border: 2px solid #ad8e59; /* حدود حقل الإدخال تستخدم اللون الجديد */
-            border-radius: 10px;
-            font-size: 1.1rem;
-            text-align: right;
-            background-color: transparent; /* هذا لون خلفية المربع الذي يحتوي على الاسم وأيقونة الحذف (شفاف) */
-            color: var(--text-color);
-            border: 2px solid #ad8e59; /* حدود حقل الإدخال تستخدم اللون الجديد */
-        }
-
-        #name-input::placeholder {
-            color: var(--placeholder-color); /* لون النص التوجيهي (placeholder) */
-        }
-
-        .button {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--bg-color); /* لون النص على الأزرار هو --bg-color */
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .button:hover {
-            transform: translateY(-3px);
-        }
-
-        #add-button {
-            background-color: var(--primary-color); /* زر أضف يستخدم لون --success-color */
-        }
-
-        #add-button:hover {
-            background-color: var(--primary-hover); /* لون زر أضف عند التمرير عليه */
-        }
-
-        #start-button {
-            background-color: var(--primary-color); /* زر ابدأ اللعبة يستخدم لون --primary-color */
-            display: none;
-            margin-top: 25px;
-        }
-
-        #start-button:hover {
-            background-color: var(--primary-hover); /* لون زر ابدأ اللعبة عند التمرير عليه */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
-        #next-button {
-            background-color: var(--primary-color); /* زر التالي يستخدم لون --primary-color */
-            display: none;
-            margin-top: 25px;
+        .header h1 { 
+            font-size: 2rem; 
+            font-weight: 700; 
+            color: var(--primary-color); 
+            margin-bottom: 0.5rem;
         }
         
-        #next-button:hover {
-            background-color: var(--primary-hover); /* لون زر التالي عند التمرير عليه */
+        .location { 
+            font-size: 1rem; 
+            color: var(--text-secondary); 
+            font-weight: 600; 
         }
 
-        #names-list {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
+        /* --- عرض التاريخ --- */
+        .date-display { 
+            display: flex; 
+            justify-content: space-around; 
+            background-color: var(--card-bg-color); 
+            padding: 1rem; 
+            border-radius: 15px; 
+            margin-bottom: 2rem; 
+            font-size: 0.9rem; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        .name-item {
-            background-color: transparent; /* هذا لون خلفية المربع الذي يحتوي على الاسم وأيقونة الحذف (شفاف) */
-            padding: 10px 15px;
-            border-radius: 8px;
+        /* --- شبكة أوقات الصلاة --- */
+        .prayer-times-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+            gap: 1rem; 
+            margin-bottom: 2rem; 
+        }
+        
+        .prayer-card { 
+            background-color: var(--card-bg-color); 
+            padding: 1.5rem 1rem; 
+            border-radius: 15px; 
+            text-align: center; 
+            transition: all 0.3s ease; 
+            border: 2px solid transparent;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .prayer-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); 
+        }
+        
+        .prayer-name { 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            color: var(--text-secondary); 
+            margin-bottom: 0.5rem; 
+        }
+        
+        .prayer-time { 
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            color: var(--text-color); 
+        }
+        
+        .prayer-card.active { 
+            background: linear-gradient(145deg, var(--primary-color), var(--secondary-color)); 
+            border-color: var(--accent-color); 
+            animation: pulse 2s infinite; 
+        }
+        
+        .prayer-card.active .prayer-name, 
+        .prayer-card.active .prayer-time { 
+            color: #fff; 
+        }
+        
+        @keyframes pulse { 
+            0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.7); } 
+            70% { box-shadow: 0 0 0 10px rgba(255, 149, 0, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } 
+        }
+
+        /* --- قسم الخيارات (الإعدادات والأذكار والقبلة) --- */
+        .options-container { 
+            display: flex; 
+            justify-content: space-around; 
+            gap: 1rem; 
+            margin-bottom: 1rem;
+        }
+        
+        .option-card { 
+            flex: 1; 
+            background-color: var(--card-bg-color); 
+            padding: 1.5rem; 
+            border-radius: 15px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            border: 2px solid transparent;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .option-card:hover { 
+            transform: scale(1.05); 
+            border-color: var(--primary-color); 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); 
+        }
+        
+        .option-card i { 
+            font-size: 2rem; 
+            color: var(--primary-color); 
+            margin-bottom: 0.5rem; 
+        }
+        
+        .option-card h3 { 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+        }
+
+        /* --- شريط التنقل السفلي (مثل آيفون) --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--bottom-nav-height);
+            background-color: var(--card-bg-color);
             display: flex;
+            justify-content: space-around;
             align-items: center;
-            gap: 10px;
-            font-size: 1.1rem;
-            color: var(--text-color);
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 -1px 3px rgba(0,0,0,0.1);
         }
-
-        .remove-icon {
-            cursor: pointer;
-            color: var(--danger-color); /* أيقونة الحذف (X) تستخدم لون --danger-color */
-            font-weight: bold;
-            font-size: 1.2rem;
-            transition: transform 0.2s ease;
-        }
-
-        .remove-icon:hover {
-            transform: scale(1.2);
-        }
-
-        #display-area {
-            display: none;
+        
+        .nav-item {
+            display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: 25px;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item i {
+            font-size: 24px;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item.active i {
+            color: var(--primary-color);
+        }
+        
+        .nav-item span {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item.active span {
+            color: var(--primary-color);
         }
 
-        #name-message-text {
-            font-size: 2.2rem;
-            font-weight: bold;
-            color: var(--primary-color); /* نص "عط الجوال لـ..." يستخدم لون --primary-color */
-            animation: fadeIn 1s ease-in-out;
+        /* --- النوافذ المنبثقة (Modals) --- */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0, 0, 0, 0.5); 
+            justify-content: center; 
+            align-items: center; 
+            padding: 1rem; 
+        }
+        
+        .modal-content { 
+            background-color: var(--card-bg-color); 
+            padding: 2rem; 
+            border-radius: 20px; 
+            width: 100%; 
+            max-width: 400px; 
+            max-height: 80vh; 
+            overflow-y: auto; 
+            position: relative; 
+            animation: slideIn 0.3s ease-out; 
+        }
+        
+        @keyframes slideIn { 
+            from { transform: translateY(-50px); opacity: 0; } 
+            to { transform: translateY(0); opacity: 1; } 
+        }
+        
+        .close-btn { 
+            position: absolute; 
+            top: 15px; 
+            left: 20px; 
+            font-size: 2rem; 
+            font-weight: bold; 
+            color: var(--text-secondary); 
+            cursor: pointer; 
+            transition: color 0.3s; 
+        }
+        
+        .close-btn:hover { 
+            color: var(--primary-color); 
         }
 
-        #person-image {
-            width: 350px;
-            height: 250px;
-            object-fit: cover;
+        /* --- محتوى نافذة الإعدادات --- */
+        .adhan-options { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1rem; 
+        }
+        
+        .adhan-choice { 
+            display: flex; 
+            align-items: center; 
+            gap: 1rem; 
+            padding: 1rem; 
+            background-color: var(--background-color); 
+            border-radius: 15px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            border: 2px solid transparent; 
+        }
+        
+        .adhan-choice:hover { 
+            border-color: var(--primary-color); 
+        }
+        
+        .adhan-choice.selected { 
+            border-color: var(--accent-color); 
+            background-color: rgba(255, 149, 0, 0.1); 
+        }
+        
+        .adhan-choice img { 
+            width: 60px; 
+            height: 60px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 3px solid var(--primary-color); 
+        }
+        
+        .adhan-info { 
+            flex-grow: 1; 
+        }
+        
+        .adhan-info h4 { 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+        }
+        
+        .adhan-info p { 
+            font-size: 0.8rem; 
+            color: var(--text-secondary); 
+        }
+        
+        .play-preview-btn { 
+            background: none; 
+            border: none; 
+            color: var(--primary-color); 
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            transition: color 0.3s; 
+        }
+        
+        .play-preview-btn:hover { 
+            color: var(--accent-color); 
+        }
+
+        /* --- محتوى نافذة الأذكار --- */
+        .adhkar-content h3 { 
+            color: var(--primary-color); 
+            margin-bottom: 1.5rem; 
+            text-align: center; 
+            font-size: 1.5rem; 
+        }
+        
+        .dhikr-card { 
+            background-color: var(--background-color); 
+            border: 1px solid rgba(0, 0, 0, 0.1); 
+            border-radius: 15px; 
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        }
+        
+        .dhikr-card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
+        }
+        
+        .dhikr-text { 
+            font-size: 1.2rem; 
+            line-height: 2; 
+            text-align: justify; 
+            margin-bottom: 1rem; 
+        }
+        
+        .dhikr-source { 
+            font-size: 0.9rem; 
+            color: var(--accent-color); 
+            text-align: left; 
+            font-weight: 600; 
+            opacity: 0.8; 
+        }
+        
+        /* --- محتوى نافذة القبلة --- */
+        #qibla-modal .modal-content { 
+            padding: 0; 
+            max-width: 100%; 
+            max-height: 100%; 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 0; 
+            background: black; 
+        }
+        
+        #qibla-view { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        
+        #qibla-video, #qibla-canvas { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+        
+        #qibla-canvas { 
+            z-index: 2; 
+        }
+        
+        #qibla-status { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            background: rgba(0, 0, 0, 0.7); 
+            color: var(--accent-color); 
+            padding: 1rem 2rem; 
+            border-radius: 50px; 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            z-index: 3; 
+            display: none; 
+            text-align: center; 
+            border: 2px solid var(--accent-color); 
+            animation: statusPulse 1s infinite; 
+        }
+        
+        @keyframes statusPulse { 
+            0%, 100% { transform: translate(-50%, -50%) scale(1); } 
+            50% { transform: translate(-50%, -50%) scale(1.05); } 
+        }
+        
+        #qibla-instructions { 
+            position: absolute; 
+            bottom: 20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: rgba(0, 0, 0, 0.7); 
+            color: white; 
+            padding: 1rem; 
+            border-radius: 10px; 
+            z-index: 3; 
+            text-align: center; 
+            font-size: 0.9rem; 
+        }
+        
+        #qibla-loader { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            z-index: 3; 
+            color: white; 
+            font-size: 1.2rem; 
+            text-align: center; 
+        }
+        
+        .close-btn-qibla { 
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            z-index: 4; 
+            font-size: 2.5rem; 
+            color: white; 
+            background: rgba(0,0,0,0.5); 
+            border-radius: 50%; 
+            width: 50px; 
+            height: 50px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+        }
+
+        /* --- رسالة للمستخدم --- */
+        .permission-message { 
+            text-align: center; 
+            padding: 1rem; 
+            background: rgba(0, 122, 255, 0.1); 
+            border: 1px solid var(--primary-color); 
+            border-radius: 10px; 
+            margin-bottom: 1rem; 
+            font-size: 0.9rem; 
+        }
+        
+        /* --- إشعار الأذان التجريبي --- */
+        .adhan-notification {
+            position: fixed;
+            top: calc(var(--status-bar-height) + 20px);
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--card-bg-color);
+            padding: 15px 20px;
             border-radius: 15px;
-            border: 5px solid var(--primary-color); /* حدود الصورة تستخدم لون --primary-color */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            animation: fadeIn 1s ease-in-out;
-            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 999;
             display: none;
+            align-items: center;
+            gap: 15px;
+            width: 90%;
+            max-width: 400px;
+            animation: slideDown 0.5s ease-out;
         }
         
-        #show-image-button {
-            background-color: var(--primary-color); /* زر إظهار الصورة يستخدم لون --primary-color */
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
         }
         
-        #show-image-button:hover {
-            background-color: var(--primary-hover); /* لون زر إظهار الصورة عند التمرير عليه */
-        }
-
-        #final-message {
-            font-size: 2.5rem;
-            color: var(--success-color); /* نص "انتهت اللعبة" يستخدم لون --success-color */
-            display: none;
-            animation: fadeIn 1s ease-in-out;
-            font-weight: bold;
+        .adhan-notification i {
+            font-size: 24px;
+            color: var(--primary-color);
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .adhan-notification-content {
+            flex-grow: 1;
+        }
+        
+        .adhan-notification-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .adhan-notification-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .adhan-notification-close {
+            cursor: pointer;
+            color: var(--text-secondary);
         }
     </style>
+    <!-- ================================= -->
+    <!-- ========== CSS CODE END ========= -->
+    <!-- ================================= -->
 </head>
 <body>
 
-<div class="container">
-    <div id="add-name-section">
-        <h1>! مين الكاذب </h1>
-        <div class="input-container">
-            <input type="text" id="name-input" placeholder="اكتب الاسم هنا..." dir="rtl">
-            <button class="button" id="add-button">أضف</button>
+    <!-- شريط الحالة العلوي -->
+    <div class="status-bar">
+        <div class="time" id="status-time">9:41</div>
+        <div class="icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
         </div>
-        
-        <ul id="names-list">
-            </ul>
-        
-        <button class="button" id="start-button">ابدأ اللعبة</button>
     </div>
 
-    <div id="display-area">
-        <p id="name-message-text"></p>
-        <button class="button" id="show-image-button">اضغط لترى صورتك</button>
-        <img id="person-image" src="" alt="صورة الشخص">
-        <button class="button" id="next-button">التالي</button>
+    <!-- إشعار الأذان التجريبي -->
+    <div class="adhan-notification" id="adhan-notification">
+        <i class="fas fa-volume-up"></i>
+        <div class="adhan-notification-content">
+            <div class="adhan-notification-title">إشعار الأذان</div>
+            <div class="adhan-notification-text">تم تفعيل إشعارات الأذان بنجاح</div>
+        </div>
+        <div class="adhan-notification-close" id="adhan-notification-close">
+            <i class="fas fa-times"></i>
+        </div>
     </div>
 
-    <div id="final-message">
-        <button class="button" id="start-story-button" style="display:none; background-color: var(--primary-color);">الانتقال إلى السالفة</button>
+    <div class="app-container">
+        <header class="header">
+            <h1>مواقيت الصلاة</h1>
+            <div class="location" id="location"><span>جاري تحديد الموقع...</span></div>
+        </header>
+
+        <main class="main-content">
+            <div class="permission-message" id="permission-message">يرجى السماح بالموقع والإشعارات عند الطلب لتشغيل التطبيق</div>
+
+            <div class="date-display" id="date-display">
+                <span id="gregorian-date">--</span>
+                <span id="hijri-date">--</span>
+            </div>
+
+            <div class="prayer-times-grid" id="prayer-times-grid">
+                <div class="prayer-card" data-prayer="Fajr"><div class="prayer-name">الفجر</div><div class="prayer-time">--:--</div></div>
+                <div class="prayer-card" data-prayer="Dhuhr"><div class="prayer-name">الظهر</div><div class="prayer-time">--:--</div></div>
+                <div class="prayer-card" data-prayer="Asr"><div class="prayer-name">العصر</div><div class="prayer-time">--:--</div></div>
+                <div class="prayer-card" data-prayer="Maghrib"><div class="prayer-name">المغرب</div><div class="prayer-time">--:--</div></div>
+                <div class="prayer-card" data-prayer="Isha"><div class="prayer-name">العشاء</div><div class="prayer-time">--:--</div></div>
+            </div>
+
+            <div class="options-container">
+                <div class="option-card" id="open-settings-btn"><i class="fas fa-cog"></i><h3>الإعدادات</h3></div>
+                <div class="option-card" id="open-adhkar-btn"><i class="fas fa-moon"></i><h3>أذكار</h3></div>
+                <div class="option-card" id="open-qibla-btn"><i class="fas fa-kaaba"></i><h3>القبلة</h3></div>
+                <a href="quran.html" class="option-card">
+                    <i class="fas fa-book-quran"></i>
+                    <h3>القرآن</h3>
+                </a>
+            </div>
+        </main>
     </div>
-</div>
 
-<script>
-    const normalImages = [
-        'https://i.imgur.com/7fIHpzo.png',
-        'https://i.imgur.com/7fIHpzo.png',
-        'https://i.imgur.com/7fIHpzo.png',
-        'https://i.imgur.com/7fIHpzo.png',
-    ];
+    <!-- شريط التنقل السفلي -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-page="home">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
+        </div>
+        <div class="nav-item" data-page="prayers">
+            <i class="fas fa-clock"></i>
+            <span>الصلوات</span>
+        </div>
+        <div class="nav-item" data-page="qibla">
+            <i class="fas fa-kaaba"></i>
+            <span>القبلة</span>
+        </div>
+        <div class="nav-item" data-page="settings">
+            <i class="fas fa-cog"></i>
+            <span>الإعدادات</span>
+        </div>
+    </div>
 
- const liarImage = 'https://i.imgur.com/XuW73jl.png'
+    <!-- --- Modal: Settings --- -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-settings-btn">&times;</span>
+            <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-color);">اختر صوت الأذان</h2>
+            <div class="adhan-options" id="adhan-options-container"></div>
+        </div>
+    </div>
 
-    const names = [];
-    let currentNameIndex = 0;
-    let gameData = { names: [], liar: null };
+    <!-- --- Modal: Adhkar --- -->
+    <div id="adhkar-modal" class="modal">
+        <div class="modal-content adhkar-content">
+            <span class="close-btn" id="close-adhkar-btn">&times;</span>
+            <h3>أذكار الصباح</h3>
+            <div class="dhikr-card">
+                <p class="dhikr-text">أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ.</p>
+                <p class="dhikr-source">رواه مسلم</p>
+            </div>
+            <div class="dhikr-card">
+                <p class="dhikr-text">اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ.</p>
+                <p class="dhikr-source">رواه الترمذي</p>
+            </div>
+            <h3 style="margin-top: 2rem;">أذكار المساء</h3>
+            <div class="dhikr-card">
+                <p class="dhikr-text">أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ.</p>
+                <p class="dhikr-source">رواه مسلم</p>
+            </div>
+            <div class="dhikr-card">
+                <p class="dhikr-text">اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ.</p>
+                <p class="dhikr-source">رواه الترمذي</p>
+            </div>
+        </div>
+    </div>
 
-    const nameInput = document.getElementById('name-input');
-    const addButton = document.getElementById('add-button');
-    const startButton = document.getElementById('start-button');
-    const nextButton = document.getElementById('next-button');
-    const showImageButton = document.getElementById('show-image-button');
-    const displayArea = document.getElementById('display-area');
-    const nameMessageText = document.getElementById('name-message-text');
-    const personImage = document.getElementById('person-image');
-    const finalMessage = document.getElementById('final-message');
-    const addNameSection = document.getElementById('add-name-section');
-    const namesList = document.getElementById('names-list');
-    const startStoryButton = document.getElementById('start-story-button');
+    <!-- --- Modal: Qibla --- -->
+    <div id="qibla-modal" class="modal">
+        <div class="modal-content">
+            <div id="qibla-view">
+                <video id="qibla-video" autoplay playsinline></video>
+                <canvas id="qibla-canvas"></canvas>
+                <div id="qibla-loader">جاري تفعيل الكاميرا...</div>
+                <div id="qibla-status">القبلة أمامك</div>
+                <div id="qibla-instructions">حرك هاتفك ببطء لتحديد اتجاه القبلة</div>
+                <span class="close-btn-qibla" id="close-qibla-btn">&times;</span>
+            </div>
+        </div>
+    </div>
 
-    function updateNamesList() {
-        namesList.innerHTML = '';
-        names.forEach((person, index) => {
-            const listItem = document.createElement('li');
-            listItem.classList.add('name-item');
-            listItem.innerHTML = `
-                <span>${person.name}</span>
-                <span class="remove-icon" data-index="${index}">×</span>
-            `;
-            namesList.appendChild(listItem);
+    <!-- Audio Element for the main Adhan -->
+    <audio id="adhan-sound" src="" preload="auto"></audio>
+
+    <!-- =================================== -->
+    <!-- ===== JAVASCRIPT CODE START ====== -->
+    <!-- =================================== -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- عناصر DOM ---
+        const locationEl = document.getElementById('location');
+        const permissionMessageEl = document.getElementById('permission-message');
+        const gregorianDateEl = document.getElementById('gregorian-date');
+        const hijriDateEl = document.getElementById('hijri-date');
+        const prayerCards = document.querySelectorAll('.prayer-card');
+        const adhanSound = document.getElementById('adhan-sound');
+        const adhanNotification = document.getElementById('adhan-notification');
+        const adhanNotificationClose = document.getElementById('adhan-notification-close');
+        const statusTime = document.getElementById('status-time');
+
+        // --- عناصر النوافذ المنبثقة ---
+        const settingsModal = document.getElementById('settings-modal');
+        const adhkarModal = document.getElementById('adhkar-modal');
+        const qiblaModal = document.getElementById('qibla-modal');
+        const openSettingsBtn = document.getElementById('open-settings-btn');
+        const openAdhkarBtn = document.getElementById('open-adhkar-btn');
+        const openQiblaBtn = document.getElementById('open-qibla-btn');
+        const closeSettingsBtn = document.getElementById('close-settings-btn');
+        const closeAdhkarBtn = document.getElementById('close-adhkar-btn');
+        const closeQiblaBtn = document.getElementById('close-qibla-btn');
+        const adhanOptionsContainer = document.getElementById('adhan-options-container');
+
+        // --- عناصر القبلة ---
+        const qiblaVideo = document.getElementById('qibla-video');
+        const qiblaCanvas = document.getElementById('qibla-canvas');
+        const qiblaCtx = qiblaCanvas.getContext('2d');
+        const qiblaLoader = document.getElementById('qibla-loader');
+        const qiblaStatus = document.getElementById('qibla-status');
+        const qiblaInstructions = document.getElementById('qibla-instructions');
+
+        // --- عناصر شريط التنقل السفلي ---
+        const navItems = document.querySelectorAll('.nav-item');
+
+        // --- متغيرات التطبيق ---
+        let prayerTimes = {};
+        let lastNotifiedPrayer = null;
+        let notificationsEnabled = false;
+        let selectedAdhan = null;
+        let previewAudio = null;
+        let userLat = null, userLon = null;
+        let qiblaDirection = null;
+        let videoStream = null;
+        let kaabaImage = new Image();
+        kaabaImage.src = 'https://i.pinimg.com/736x/77/bf/37/77bf372be9a72ef856a0c159d57969f6.jpg';
+
+        // --- بيانات أصوات الأذان ---
+        const adhanData = [
+            { id: 1, name: 'مشاري العفاسي', image: 'https://i.imgur.com/K1G0t5M.jpeg', audio: 'https://n.uguu.se/Yrmfvrtt.mp3' },
+            { id: 2, name: 'عبد الباسط عبد الصمد', image: 'https://i.imgur.com/7s8B2Jk.jpeg', audio: 'https://n.uguu.se/Yrmfvrtt.mp3' },
+            { id: 3, name: 'محمد صديق المنشاوي', image: 'https://i.imgur.com/g3pL7q9.jpeg', audio: 'https://n.uguu.se/Yrmfvrtt.mp3' },
+            { id: 4, name: 'ماهر المعيقلي', image: 'https://i.imgur.com/8QmC2Yc.png', audio: 'https://n.uguu.se/Yrmfvrtt.mp3' }
+        ];
+
+        // --- وظائف مساعدة ---
+        function formatTime(timeString) {
+            const [hours, minutes] = timeString.split(':');
+            const h = parseInt(hours);
+            const period = h >= 12 ? 'م' : 'ص';
+            const displayHours = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+            return `${displayHours}:${minutes} ${period}`;
+        }
+
+        // --- تحديث الوقت في شريط الحالة ---
+        function updateStatusBarTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+            statusTime.textContent = `${hours}:${formattedMinutes}`;
+        }
+
+        // --- جلب البيانات من API ---
+        async function fetchPrayerTimes(lat, lon) {
+            userLat = lat; userLon = lon;
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const response = await fetch(`https://api.aladhan.com/v1/timings/${today}?latitude=${lat}&longitude=${lon}&method=4`);
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    prayerTimes = data.data.timings;
+                    updatePrayerTimesDisplay();
+                    updateDateDisplay(data.data.date);
+                    
+                    // تحديث موقع المستخدم
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const city = data.address.city || data.address.town || data.address.village || 'غير محدد';
+                            locationEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${city}`;
+                        })
+                        .catch(err => {
+                            console.error('Error fetching location:', err);
+                            locationEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> تم تحديد الموقع`;
+                        });
+                }
+            } catch (error) {
+                console.error('Error fetching prayer times:', error);
+                locationEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> خطأ في تحديد الموقع`;
+            }
+        }
+
+        // --- تحديث عرض أوقات الصلاة ---
+        function updatePrayerTimesDisplay() {
+            const prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+            const prayerNames = {
+                'Fajr': 'الفجر',
+                'Dhuhr': 'الظهر',
+                'Asr': 'العصر',
+                'Maghrib': 'المغرب',
+                'Isha': 'العشاء'
+            };
+            
+            prayerCards.forEach(card => {
+                const prayerName = card.dataset.prayer;
+                if (prayerTimes[prayerName]) {
+                    card.querySelector('.prayer-time').textContent = formatTime(prayerTimes[prayerName]);
+                }
+            });
+            
+            // تحديد الصلاة الحالية
+            highlightCurrentPrayer();
+        }
+
+        // --- تحديث عرض التاريخ ---
+        function updateDateDisplay(dateData) {
+            if (dateData.gregorian) {
+                const { day, month, year } = dateData.gregorian;
+                gregorianDateEl.textContent = `${day} ${month.ar} ${year}`;
+            }
+            
+            if (dateData.hijri) {
+                const { day, month, year } = dateData.hijri;
+                hijriDateEl.textContent = `${day} ${month.ar} ${year} هـ`;
+            }
+        }
+
+        // --- تحديد الصلاة الحالية ---
+        function highlightCurrentPrayer() {
+            const now = new Date();
+            const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            let currentPrayer = null;
+            let nextPrayer = null;
+            
+            const prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+            
+            for (let i = 0; i < prayers.length; i++) {
+                if (currentTime >= prayerTimes[prayers[i]]) {
+                    currentPrayer = prayers[i];
+                    nextPrayer = prayers[(i + 1) % prayers.length];
+                }
+            }
+            
+            // إزالة الكلاس النشط من كل البطاقات
+            prayerCards.forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // إضافة الكلاس النشط للصلاة الحالية
+            if (currentPrayer) {
+                const currentCard = document.querySelector(`.prayer-card[data-prayer="${currentPrayer}"]`);
+                if (currentCard) {
+                    currentCard.classList.add('active');
+                }
+            }
+            
+            // التحقق من إشعار الصلاة التالية
+            if (nextPrayer && notificationsEnabled) {
+                const nextPrayerTime = prayerTimes[nextPrayer];
+                const [nextHours, nextMinutes] = nextPrayerTime.split(':').map(Number);
+                const nextTime = new Date();
+                nextTime.setHours(nextHours, nextMinutes, 0, 0);
+                
+                const timeDiff = nextTime - now;
+                
+                // إذا كانت الصلاة التالية خلال 5 دقائق ولم يتم إرسال إشعار لها
+                if (timeDiff > 0 && timeDiff <= 5 * 60 * 1000 && lastNotifiedPrayer !== nextPrayer) {
+                    showPrayerNotification(nextPrayer);
+                    lastNotifiedPrayer = nextPrayer;
+                }
+            }
+        }
+
+        // --- عرض إشعار الصلاة ---
+        function showPrayerNotification(prayerName) {
+            if (!selectedAdhan) return;
+            
+            // تشغيل صوت الأذان
+            adhanSound.src = selectedAdhan.audio;
+            adhanSound.play();
+            
+            // عرض الإشعار
+            if ('Notification' in window && Notification.permission === 'granted') {
+                const prayerNames = {
+                    'Fajr': 'الفجر',
+                    'Dhuhr': 'الظهر',
+                    'Asr': 'العصر',
+                    'Maghrib': 'المغرب',
+                    'Isha': 'العشاء'
+                };
+                
+                new Notification('حان وقت الصلاة', {
+                    body: `حان وقت صلاة ${prayerNames[prayerName]}`,
+                    icon: 'https://i.imgur.com/K1G0t5M.jpeg'
+                });
+            }
+        }
+
+        // --- طلب إذن الموقع والإشعارات تلقائياً عند تحميل الصفحة ---
+        function requestPermissions() {
+            // طلب إذن الموقع
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const { latitude, longitude } = position.coords;
+                        fetchPrayerTimes(latitude, longitude);
+                        
+                        // طلب إذن الإشعارات بعد الحصول على الموقع
+                        requestNotificationPermission();
+                    },
+                    error => {
+                        console.error('Error getting location:', error);
+                        locationEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> لم يتمكن من تحديد الموقع`;
+                        permissionMessageEl.textContent = 'يرجى تفعيل الموقع يدوياً من إعدادات المتصفح';
+                    }
+                );
+            } else {
+                locationEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> المتصفح لا يدعم تحديد الموقع`;
+                permissionMessageEl.textContent = 'متصفحك لا يدعم تحديد الموقع، يرجى استخدام متصفح حديث';
+            }
+        }
+
+        // --- طلب إذن الإشعارات ---
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        notificationsEnabled = true;
+                        permissionMessageEl.style.display = 'none';
+                        
+                        // عرض إشعار تجريبي بعد تفعيل الإشعارات
+                        showTestNotification();
+                    } else {
+                        permissionMessageEl.textContent = 'لم يتم تفعيل الإشعارات. لن تتلقى تنبيهات أوقات الصلاة.';
+                    }
+                });
+            } else {
+                permissionMessageEl.textContent = 'متصفحك لا يدعم الإشعارات. لن تتلقى تنبيهات أوقات الصلاة.';
+            }
+        }
+
+        // --- عرض إشعار تجريبي ---
+        function showTestNotification() {
+            // عرض الإشعار المخصص في الصفحة
+            adhanNotification.style.display = 'flex';
+            
+            // إغلاق الإشعار تلقائياً بعد 20 ثانية
+            setTimeout(() => {
+                adhanNotification.style.display = 'none';
+            }, 20000);
+            
+            // إغلاق الإشعار عند النقر على زر الإغلاق
+            adhanNotificationClose.addEventListener('click', () => {
+                adhanNotification.style.display = 'none';
+            });
+            
+            // تشغيل صوت الأذان التجريبي
+            if (selectedAdhan) {
+                const testAudio = new Audio(selectedAdhan.audio);
+                testAudio.play();
+            }
+        }
+
+        // --- عرض خيارات الأذان ---
+        function renderAdhanOptions() {
+            adhanOptionsContainer.innerHTML = '';
+            
+            adhanData.forEach(adhan => {
+                const adhanChoice = document.createElement('div');
+                adhanChoice.className = 'adhan-choice';
+                if (selectedAdhan && selectedAdhan.id === adhan.id) {
+                    adhanChoice.classList.add('selected');
+                }
+                
+                adhanChoice.innerHTML = `
+                    <img src="${adhan.image}" alt="${adhan.name}">
+                    <div class="adhan-info">
+                        <h4>${adhan.name}</h4>
+                        <p>صوت الأذان</p>
+                    </div>
+                    <button class="play-preview-btn"><i class="fas fa-play"></i></button>
+                `;
+                
+                // اختيار صوت الأذان
+                adhanChoice.addEventListener('click', (e) => {
+                    if (!e.target.closest('.play-preview-btn')) {
+                        document.querySelectorAll('.adhan-choice').forEach(choice => {
+                            choice.classList.remove('selected');
+                        });
+                        adhanChoice.classList.add('selected');
+                        selectedAdhan = adhan;
+                        adhanSound.src = adhan.audio;
+                    }
+                });
+                
+                // تشغيل معاينة صوت الأذان
+                const playBtn = adhanChoice.querySelector('.play-preview-btn');
+                playBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    if (previewAudio) {
+                        previewAudio.pause();
+                        previewAudio = null;
+                        playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    } else {
+                        previewAudio = new Audio(adhan.audio);
+                        previewAudio.play();
+                        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        
+                        previewAudio.addEventListener('ended', () => {
+                            previewAudio = null;
+                            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        });
+                    }
+                });
+                
+                adhanOptionsContainer.appendChild(adhanChoice);
+            });
+        }
+
+        // --- تفعيل الكاميرا للقبلة ---
+        async function initQiblaView() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                qiblaVideo.srcObject = videoStream;
+                
+                qiblaVideo.addEventListener('loadedmetadata', () => {
+                    qiblaCanvas.width = qiblaVideo.videoWidth;
+                    qiblaCanvas.height = qiblaVideo.videoHeight;
+                    qiblaLoader.style.display = 'none';
+                    qiblaInstructions.style.display = 'block';
+                    
+                    // حساب اتجاه القبلة
+                    calculateQiblaDirection();
+                    
+                    // بدء تحديث الكاميرا
+                    updateQiblaView();
+                });
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                qiblaLoader.textContent = 'لا يمكن الوصول إلى الكاميرا';
+            }
+        }
+
+        // --- حساب اتجاه القبلة ---
+        function calculateQiblaDirection() {
+            // إحداثيات الكعبة
+            const kaabaLat = 21.4225;
+            const kaabaLon = 39.8262;
+            
+            // حساب الاتجاه
+            const φ1 = userLat * Math.PI / 180;
+            const φ2 = kaabaLat * Math.PI / 180;
+            const Δλ = (kaabaLon - userLon) * Math.PI / 180;
+            
+            const y = Math.sin(Δλ) * Math.cos(φ2);
+            const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+            
+            const θ = Math.atan2(y, x);
+            qiblaDirection = (θ * 180 / Math.PI + 360) % 360;
+        }
+
+        // --- تحديث عرض القبلة ---
+        function updateQiblaView() {
+            if (!qiblaModal.style.display || qiblaModal.style.display === 'none') return;
+            
+            qiblaCtx.drawImage(qiblaVideo, 0, 0, qiblaCanvas.width, qiblaCanvas.height);
+            
+            // رسم اتجاه القبلة
+            const centerX = qiblaCanvas.width / 2;
+            const centerY = qiblaCanvas.height / 2;
+            const radius = Math.min(centerX, centerY) * 0.8;
+            
+            // رسم دائرة
+            qiblaCtx.beginPath();
+            qiblaCtx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            qiblaCtx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            qiblaCtx.lineWidth = 2;
+            qiblaCtx.stroke();
+            
+            // رسم خط اتجاه القبلة
+            const angle = (qiblaDirection - 90) * Math.PI / 180;
+            const endX = centerX + radius * Math.cos(angle);
+            const endY = centerY + radius * Math.sin(angle);
+            
+            qiblaCtx.beginPath();
+            qiblaCtx.moveTo(centerX, centerY);
+            qiblaCtx.lineTo(endX, endY);
+            qiblaCtx.strokeStyle = '#FF9500';
+            qiblaCtx.lineWidth = 4;
+            qiblaCtx.stroke();
+            
+            // رسم أيقونة الكعبة
+            const iconSize = 40;
+            const iconX = endX - iconSize / 2;
+            const iconY = endY - iconSize / 2;
+            
+            qiblaCtx.drawImage(kaabaImage, iconX, iconY, iconSize, iconSize);
+            
+            // التحقق من اتجاه القبلة
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', handleOrientation);
+            }
+            
+            requestAnimationFrame(updateQiblaView);
+        }
+
+        // --- التعامل مع اتجاه الجهاز ---
+        function handleOrientation(event) {
+            const alpha = event.alpha; // الاتجاه بالنسبة للشمال
+            if (alpha !== null && qiblaDirection !== null) {
+                const diff = Math.abs(alpha - qiblaDirection);
+                
+                if (diff < 10 || diff > 350) {
+                    qiblaStatus.style.display = 'block';
+                    qiblaInstructions.style.display = 'none';
+                } else {
+                    qiblaStatus.style.display = 'none';
+                    qiblaInstructions.style.display = 'block';
+                }
+            }
+        }
+
+        // --- إغلاق الكاميرا ---
+        function closeQiblaView() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            
+            if (window.DeviceOrientationEvent) {
+                window.removeEventListener('deviceorientation', handleOrientation);
+            }
+            
+            qiblaStatus.style.display = 'none';
+            qiblaInstructions.style.display = 'block';
+        }
+
+        // --- معالجات الأحداث ---
+        openSettingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+            renderAdhanOptions();
         });
 
-        document.querySelectorAll('.remove-icon').forEach(icon => {
-            icon.addEventListener('click', function(event) {
-                const indexToRemove = parseInt(event.target.dataset.index);
-                names.splice(indexToRemove, 1);
-                updateNamesList();
+        closeSettingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+
+        openAdhkarBtn.addEventListener('click', () => {
+            adhkarModal.style.display = 'flex';
+        });
+
+        closeAdhkarBtn.addEventListener('click', () => {
+            adhkarModal.style.display = 'none';
+        });
+
+        openQiblaBtn.addEventListener('click', () => {
+            qiblaModal.style.display = 'flex';
+            initQiblaView();
+        });
+
+        closeQiblaBtn.addEventListener('click', () => {
+            qiblaModal.style.display = 'none';
+            closeQiblaView();
+        });
+
+        // --- معالجات شريط التنقل السفلي ---
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // إزالة الكلاس النشط من كل العناصر
+                navItems.forEach(navItem => {
+                    navItem.classList.remove('active');
+                });
+                
+                // إضافة الكلاس النشط للعنصر المحدد
+                item.classList.add('active');
+                
+                // تنفيذ الإجراء المناسب بناءً على الصفحة المحددة
+                const page = item.dataset.page;
+                switch(page) {
+                    case 'home':
+                        // الصفحة الرئيسية (لا تفعل شيئاً)
+                        break;
+                    case 'prayers':
+                        // التمرير إلى قسم أوقات الصلاة
+                        document.querySelector('.prayer-times-grid').scrollIntoView({ behavior: 'smooth' });
+                        break;
+                    case 'qibla':
+                        // فتح نافذة القبلة
+                        qiblaModal.style.display = 'flex';
+                        initQiblaView();
+                        break;
+                    case 'settings':
+                        // فتح نافذة الإعدادات
+                        settingsModal.style.display = 'flex';
+                        renderAdhanOptions();
+                        break;
+                }
             });
         });
 
-        if (names.length >= 2) {
-            startButton.style.display = 'block';
-        } else {
-            startButton.style.display = 'none';
-        }
-    }
-
-    function addName() {
-        const name = nameInput.value.trim();
-        if (name === '') {
-            return;
-        }
-        names.push({ name: name, isLiar: false, image: '' });
-        nameInput.value = '';
-        updateNamesList();
-        nameInput.focus();
-    }
-
-    function startGame() {
-        if (names.length < 2) {
-            alert('يجب إضافة اسمين على الأقل لبدء اللعبة!');
-            return;
-        }
-
-        const liarIndex = Math.floor(Math.random() * names.length);
-        names[liarIndex].isLiar = true;
-        
-        let normalImageCounter = 0;
-        names.forEach(person => {
-            if (person.isLiar) {
-                person.image = liarImage;
-            } else {
-                person.image = normalImages[normalImageCounter % normalImages.length];
-                normalImageCounter++;
+        // --- إغلاق النوافذ المنبثقة عند النقر خارجها ---
+        window.addEventListener('click', (event) => {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            if (event.target === adhkarModal) {
+                adhkarModal.style.display = 'none';
+            }
+            if (event.target === qiblaModal) {
+                qiblaModal.style.display = 'none';
+                closeQiblaView();
             }
         });
 
-        gameData.names = names;
-        gameData.liar = names[liarIndex].name;
+        // --- تحديث الوقت كل دقيقة ---
+        setInterval(() => {
+            updateStatusBarTime();
+            highlightCurrentPrayer();
+        }, 60000);
 
-        addNameSection.style.display = 'none';
-        displayArea.style.display = 'flex';
-        showCurrentName();
-    }
-
-    function showCurrentName() {
-        if (currentNameIndex < gameData.names.length) {
-            const currentPerson = gameData.names[currentNameIndex];
-            nameMessageText.textContent = `عط الجوال لـ ${currentPerson.name}`;
+        // --- تهيئة التطبيق ---
+        function initApp() {
+            // تحديث الوقت في شريط الحالة
+            updateStatusBarTime();
             
-            showImageButton.textContent = `أنا ${currentPerson.name}`;
-            showImageButton.style.display = 'block';
-            nextButton.style.display = 'none';
-            personImage.style.display = 'none';
-        } else {
-            displayArea.style.display = 'none';
-            finalMessage.style.display = 'block';
-            startStoryButton.style.display = 'block';
+            // طلب الأذونات تلقائياً
+            requestPermissions();
+            
+            // تعيين صوت الأذان الافتراضي
+            selectedAdhan = adhanData[0];
+            adhanSound.src = selectedAdhan.audio;
         }
-    }
-    
-    function revealImage() {
-        const currentPerson = gameData.names[currentNameIndex];
-        personImage.src = currentPerson.image;
-        
-        nameMessageText.style.display = 'none';
-        personImage.style.display = 'block';
-        showImageButton.style.display = 'none';
-        nextButton.style.display = 'block';
-        nextButton.textContent = 'التالي';
-    }
 
-    function nextPerson() {
-        currentNameIndex++;
-        nameMessageText.style.display = 'block';
-        showCurrentName();
-    }
-
-    addButton.addEventListener('click', addName);
-    nameInput.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            addName();
-        }
+        // بدء التطبيق
+        initApp();
     });
-
-    startButton.addEventListener('click', startGame);
-    showImageButton.addEventListener('click', revealImage);
-    nextButton.addEventListener('click', nextPerson);
-  startStoryButton.addEventListener('click', function() {
-    localStorage.setItem('gameData', JSON.stringify(gameData));
-    window.location.href = 'page2.html';
-});
-</script>
-
+    </script>
+    <!-- =================================== -->
+    <!-- ===== JAVASCRIPT CODE END ======= -->
+    <!-- =================================== -->
 </body>
-
 </html>
