@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي الاستراحه</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000000;
+            --card:#26170c;
+            --gold: #806552;
+            --white: #ffffff;
+            --red: #26170c;
+            --blue: #000000;
+            --green: #000000;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg);
+            color: var(--white);
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+
+        .container {
+            width: 95%; max-width: 1100px; background: var(--card);
+            padding: 25px; border-radius: 20px; margin: 30px auto;
+            border: 1px solid rgba(212, 175, 55, 0.1); text-align: center;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .hidden { display: none !important; }
+
+        .category-row {
+            display: grid; grid-template-columns: 1fr 1.5fr 1fr;
+            align-items: center; gap: 20px; 
+            background: rgba(255, 255, 255, 0.03); 
+            padding: 20px; border-radius: 15px; border-bottom: 2px solid var(--gold);
+            margin-bottom: 25px;
+        }
+
+        .center-card { background: rgba(0, 0, 0, 0.8); border-radius: 12px; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.3); }
+        .center-card img { width: 100%; height: 80px; object-fit: cover; opacity: 0.6; }
+        .center-card p { margin: 10px 0; font-weight: bold; font-size: 1.1rem; color: var(--gold); }
+
+        .btn-points {
+            background: rgba(255, 255, 255, 0.07); color: var(--gold); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 5px; margin: 5px 0; cursor: pointer;
+            border-radius: 8px; font-weight: bold; font-size: 1.2rem; transition: 0.4s;
+        }
+        .btn-points:hover:not(:disabled) { background: var(--gold); color: #000; transform: translateY(-3px); }
+        .btn-points:disabled { opacity: 0.05; cursor: not-allowed; }
+
+        .score-board {
+            width: 100%; margin-top: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex; justify-content: center; align-items: center; gap: 40px;
+            padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .score-item { text-align: center; min-width: 150px; position: relative; }
+        .score-val { font-size: 2.2rem; color: var(--gold); font-weight: bold; display: block; }
+        
+        .score-btns { display: flex; justify-content: center; gap: 6px; margin-top: 5px; } 
+        .score-btns button {
+            width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 0.8rem;
+            display: flex; align-items: center; justify-content: center; transition: 0.3s; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-plus { background: #2ecc71; color: white; }
+        .btn-minus { background: #e74c3c; color: white; }
+        .btn-help { background: #806552; color: #fff; border: 1px solid var(--gold) !important; width: auto !important; height: auto !important; padding: 5px; border-radius: 10px !important; }
+        .btn-help:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
+
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: rgba(15, 15, 15, 0.98); border: 2px solid var(--gold); padding: 30px;
+            border-radius: 25px; width: 90%; max-width: 600px; text-align: center;
+        }
+
+        .btn-action {
+            background: var(--gold); color: #000; padding: 12px 30px;
+            border: none; border-radius: 30px; font-weight: bold; cursor: pointer; margin: 10px;
+        }
+
+        #name-alert {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #000; border: 2px solid var(--gold); padding: 20px; border-radius: 15px;
+            text-align: center; z-index: 2000; width: 300px;
+        }
+        #name-alert img { width: 100%; border-radius: 10px; margin-bottom: 15px; }
+
+        #win-video { width: 320px; border-radius: 15px; border: 2px solid var(--gold); margin-top: 15px; }
+        #call-timer-box { font-size: 3rem; color: var(--blue); font-weight: bold; margin: 20px 0; }
+        
+        /* تنسيق صورة السؤال الجديد */
+        #q-image {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 15px;
+            margin: 15px 0;
+            border: 1px solid var(--gold);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="name-alert" class="hidden">
+        <img src="https://i.pinimg.com/736x/df/fb/52/dffb5291e1a7731331329496677fe8f1.jpg">
+        <p>لاهنت حط اسم الفريق</p>
+        <button class="btn-action" style="padding: 10px 20px;" onclick="closeAlert()">أبشر</button>
+    </div>
+
+    <div id="setup-screen" class="container">
+        <h1 style="color:var(--gold); font-size: 2.5rem;">تحدي الاستراحه</h1>
+        <input type="text" id="t1-in" placeholder="اسم الفريق الأول" style="width:70%; padding:15px; margin:10px; border-radius:12px; border:1px solid #333; background:rgba(255,255,255,0.05); color:white; text-align:center;">
+        <input type="text" id="t2-in" placeholder="اسم الفريق الثاني" style="width:70%; padding:15px; margin:10px; border-radius:12px; border:1px solid #333; background:rgba(255,255,255,0.05); color:white; text-align:center;">
+        <br>
+        <button class="btn-action" onclick="startGame()">ابدأ</button>
+    </div>
+
+    <div id="game-screen" class="container hidden">
+        <div style="background:rgba(212,175,55,0.1); padding:15px; border-radius:12px; margin-bottom:25px; border: 1px solid rgba(212,175,55,0.2);">
+            الدور الحالي: <span id="turn-display" style="color:var(--gold); font-weight:bold; font-size: 1.3rem;">-</span>
+            <div id="double-status" style="color: #e74c3c; font-weight: bold; margin-top: 5px;" class="hidden"> تم تفعيل التدبيل!</div>
+        </div>
+
+        <div class="grid-container">
+            <div class="category-row">
+                <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'ما هو البيت الأضعف على وجه الأرض؟', 'بيت العنكبوت', 200, 'https://i.pinimg.com/736x/7f/27/b3/7f27b39a087b565c9aa9a48150cd3bf9.jpg')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'ما هو الشيء الذي يدعى باهون وموجود دائمًا في الحياة لكنّه أغلى شيء يمكن أن نفقده؟', 'الماء', 300, 'https://i.pinimg.com/1200x/73/bd/37/73bd3720e171558d365c61a7e9ee8494.jpg')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'ما هو الشيء الذي يمشي دون أن يمتلك قدمين، ويستطيع الطير دون أن يمتلك جناحين، ويبكي أيضًا دون أن يملك عينين؟', 'الغيوم', 600, 'https://modo3.com/thumbs/fit630x300/257068/1687675824/%D8%A3%D8%B3%D8%A6%D9%84%D8%A9_%D8%B0%D9%83%D8%A7%D8%A1_%D8%B9%D8%A7%D9%85%D8%A9.jpg')">600</button>
+                </div>
+<div class="center-card">
+    <img src="https://modo3.com/thumbs/fit630x300/257068/1687675824/%D8%A3%D8%B3%D8%A6%D9%84%D8%A9_%D8%B0%D9%83%D8%A7%D8%A1_%D8%B9%D8%A7%D9%85%D8%A9.jpg" alt="أسئلة ذكاء عامة" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
+    <p>أسئلة ذكاء عامة</p>
+</div>                 <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'أين توجد حاسة الشم لدى الثعبان؟', 'في لسانه', 200, 'https://i.pinimg.com/736x/02/04/3c/02043c9410f41393db145ceb170360bf.jpg')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'ما هو الشيء الذي يدور في البيت دون أن يتحرك من مكانه مطلقًا؟', 'الحائط', 300, 'https://i.pinimg.com/1200x/0a/7a/e4/0a7ae402b6a4904b29dbc7a6f72b8b78.jpg')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'ما هو الشيء الذي لديه الكثير من الأسنان لكنه لا يمكنه عض أحد؟', 'المشط', 600, 'https://i.pinimg.com/736x/56/98/f8/5698f841bb0bc9c03beff89209ea2526.jpg')">600</button>
+                </div>
+            </div>
+			
+			
+			        <div class="grid-container">
+            <div class="category-row">
+                <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'إن غاب القط ؟', 'العب يا فار', 200, 'https://i.pinimg.com/736x/b1/0c/6e/b10c6e9ae42bc2e301a531659c0093b1.jpg')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'الجار قبل ؟', 'الدار', 300, 'https://i.pinimg.com/736x/9d/36/87/9d368706d8d6dbe195671325c0ff5316.jpg')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'سيل ما يبلك ؟', 'لا يهمك', 600, 'https://i.pinimg.com/1200x/ee/25/9e/ee259eb4a9a67d7c2cef9ea2b2d31730.jpg')">600</button>
+                </div>
+<div class="center-card">
+    <img src="https://cdn.arabsstock.com/uploads/images/69986/saudi-arabian-gulf-man-business-thumbnail-69986.webp" alt="أمثال شعبية" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
+    <p>أمثال شعبية</p>
+</div>                 <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'القرد بعين ؟', 'بعين أمه غزال', 200, 'https://i.pinimg.com/736x/e6/0c/16/e60c16c69fc177a0fef226b277ba7b46.jpg')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'الرجال مخابر ؟', 'ما هي بمناظر', 300, 'https://i.pinimg.com/736x/0f/8f/73/0f8f732b180a54f3ebe71b9c16c90b73.jpg')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'سم الرجاجييل بأساميها ؟', 'لا تأكـلك بأثاميها', 600, 'https://i.pinimg.com/736x/56/a1/1b/56a11b56dc1a084ee2215c35b15632fc.jpg')">600</button>
+                </div>
+            </div>
+
+            <div class="category-row">
+                <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'مكان مين ؟', 'استراحة ابوحسام', 200, 'https://i.postimg.cc/4ysdRPzX/mkan-myn.png')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'متى تم بناء عزبة ابو سلطان السنافي اي عام ؟', '2017', 300, 'https://i.postimg.cc/4xSmHzTV/mty-tm-bnaʾ-ʿzbt-abw-sltan-alsnafy-ay-ʿam.png')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'في اي عام هذي الصوره في المزرعه ؟', '2011', 600, 'https://files.catbox.moe/oye0at.png')">600</button>
+                </div>
+<div class="center-card">
+    <img src="https://i.postimg.cc/bvVHJG6f/instc-2025-09-25-060129-982-jpg333333333333333333333.jpg" alt="المزرعه" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
+    <p>المزرعه</p>
+</div>                <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'مكان مين ؟', 'استراحة ابومجاهد', 200, 'https://i.postimg.cc/7hkCYwyZ/astraht-abwmjahd.png')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'متى تم بناء الشارع اي عام ؟', '2014', 300, 'https://files.catbox.moe/uf84eo.png')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'في اي عام هذي الصوره في المزرعه ؟', '2003', 600, 'https://files.catbox.moe/rvoshp.png')">600</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">
+                <span id="name1" style="color: #888; font-size: 0.9rem;">-</span>
+                <span id="s1" class="score-val">0</span>
+                <div class="score-btns">
+                    <button class="btn-plus" onclick="manualAdj(1, 200)">+</button>
+                    <button class="btn-minus" onclick="manualAdj(1, -200)">-</button>
+                    <button id="call1" class="btn-help" title="اتصال بصديق" onclick="useCall(1)">
+                        <img src="https://files.catbox.moe/bwn2ng.png" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+                    </button>
+                    <button id="double1" class="btn-help" title="تدبيل" onclick="useDouble(1)">
+                        <img src="https://files.catbox.moe/eq7djd.png" style="width: 70px; height: 35px; object-fit: contain;">
+                    </button>
+                </div>
+            </div>
+            <div style="height: 50px; width: 1px; background: rgba(212,175,55,0.3);"></div>
+            <div class="score-item">
+                <span id="name2" style="color: #888; font-size: 0.9rem;">-</span>
+                <span id="s2" class="score-val">0</span>
+                <div class="score-btns">
+                    <button class="btn-plus" onclick="manualAdj(2, 200)">+</button>
+                    <button class="btn-minus" onclick="manualAdj(2, -200)">-</button>
+                    <button id="call2" class="btn-help" title="اتصال بصديق" onclick="useCall(2)">
+                        <img src="https://files.catbox.moe/bwn2ng.png" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+                    </button>
+                    <button id="double2" class="btn-help" title="تدبيل" onclick="useDouble(2)">
+                        <img src="https://files.catbox.moe/eq7djd.png" style="width: 70px; height: 35px; object-fit: contain;">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="call-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 style="color: var(--blue);">📞 جارٍ الاتصال بصديق...</h2>
+            <div id="call-timer-box">30</div>
+            <button class="btn-action" style="background: #e74c3c; color: #fff;" onclick="endCall()">إنهاء المكالمة</button>
+        </div>
+    </div>
+
+    <div id="q-modal" class="modal hidden">
+        <div class="modal-content">
+            <div id="status-notice" style="padding:10px; border-radius:10px; margin-bottom:15px;">📢</div>
+            <div id="timer" style="font-size:3.5rem; color:#e74c3c; font-weight: bold;">45</div>
+            <h3 id="q-text" style="font-size: 1.6rem; margin: 15px 0;">السؤال؟</h3>
+            
+            <img id="q-image" src="" class="hidden">
+
+            <div id="ans-box" class="hidden" style="background:#000; padding:15px; border-radius:15px; border:1px solid var(--gold);">
+                <strong id="correct-ans" style="color: var(--gold); font-size: 1.5rem;"></strong>
+            </div>
+            <button id="reveal-btn" class="btn-action" onclick="showAns()">إظهار الإجابة</button>
+            <div id="win-tools" class="hidden">
+                <button class="btn-action" id="btn-win1" onclick="endQ(1)">ف1</button>
+                <button class="btn-action" id="btn-win2" onclick="endQ(2)">ف2</button>
+                <button class="btn-action" style="background:#333; color:#fff" onclick="endQ(0)">ولا احد</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="win-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 style="color:var(--gold); margin-bottom: 0;">أبطال الاستراحة هم فريق</h2>
+            <h1 id="winner-name" style="color:#fff; font-size: 3rem; margin-top: 5px; text-shadow: 0 0 10px var(--gold);"></h1>
+            <video id="win-video" playsinline>
+                <source src="https://files.catbox.moe/3z8y5e.mp4" type="video/mp4">
+            </video>
+            <br>
+            <button class="btn-action" onclick="location.reload()">إعادة المسابقة</button>
+        </div>
+    </div>
+
+    <script>
+        let s = {t1:0, t2:0}, n = {t1:"", t2:""}, turn = 1, tVal = 45, interval, callInterval, currPts = 0, stage = 1, lastBtn = null;
+        let totalQ = 0, answeredQ = 0, isDoubleActive = false, originalPoints = 0;
+        let usedTools = { t1Call: false, t1Double: false, t2Call: false, t2Double: false };
+
+        function startGame() {
+            let i1 = document.getElementById('t1-in').value.trim();
+            let i2 = document.getElementById('t2-in').value.trim();
+            if(!i1 || !i2) { document.getElementById('name-alert').classList.remove('hidden'); return; }
+            n.t1 = i1; n.t2 = i2;
+            document.getElementById('name1').innerText = n.t1;
+            document.getElementById('name2').innerText = n.t2;
+            document.getElementById('btn-win1').innerText = n.t1;
+            document.getElementById('btn-win2').innerText = n.t2;
+            totalQ = document.querySelectorAll('.btn-points').length;
+            updateTurn();
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+        }
+
+        function closeAlert() { document.getElementById('name-alert').classList.add('hidden'); }
+        function updateTurn() { document.getElementById('turn-display').innerText = turn === 1 ? n.t1 : n.t2; }
+
+        function useDouble(team) {
+            if(team !== turn) return;
+            if(usedTools[`t${team}Double`]) return;
+            isDoubleActive = true;
+            usedTools[`t${team}Double`] = true;
+            document.getElementById(`double${team}`).disabled = true;
+            document.getElementById('double-status').classList.remove('hidden');
+        }
+
+        function useCall(team) {
+            if(usedTools[`t${team}Call`]) return;
+            usedTools[`t${team}Call`] = true;
+            document.getElementById(`call${team}`).disabled = true;
+            document.getElementById('call-modal').classList.remove('hidden');
+            let cTime = 30;
+            document.getElementById('call-timer-box').innerText = cTime;
+            callInterval = setInterval(() => {
+                cTime--;
+                document.getElementById('call-timer-box').innerText = cTime;
+                if(cTime <= 0) endCall();
+            }, 1000);
+        }
+
+        function endCall() { clearInterval(callInterval); document.getElementById('call-modal').classList.add('hidden'); }
+
+        // تم تحديث الدالة لتقبل رابط الصورة imgUrl
+        function openQ(btn, q, a, p, imgUrl) {
+            if(btn.disabled) return;
+            lastBtn = btn; 
+            originalPoints = p; 
+            currPts = isDoubleActive ? p * 2 : p;
+            tVal = 45; stage = 1;
+            document.getElementById('q-text').innerText = q;
+            document.getElementById('correct-ans').innerText = a;
+            
+            // التعامل مع الصورة
+            const imgElement = document.getElementById('q-image');
+            if(imgUrl && imgUrl.trim() !== "") {
+                imgElement.src = imgUrl;
+                imgElement.classList.remove('hidden');
+            } else {
+                imgElement.src = "";
+                imgElement.classList.add('hidden');
+            }
+
+            document.getElementById('q-modal').classList.remove('hidden');
+            document.getElementById('ans-box').classList.add('hidden');
+            document.getElementById('win-tools').classList.add('hidden');
+            document.getElementById('reveal-btn').classList.remove('hidden');
+            
+            document.getElementById('btn-win1').classList.remove('hidden');
+            document.getElementById('btn-win2').classList.remove('hidden');
+            
+            if(isDoubleActive) {
+                updateNotice(` الجواب فقط لـ: ${turn === 1 ? n.t1 : n.t2}`, "rgba(255, 71, 87, 0.6)");
+                if(turn === 1) document.getElementById('btn-win2').classList.add('hidden');
+                else document.getElementById('btn-win1').classList.add('hidden');
+            } else {
+                updateNotice(`دور: ${turn === 1 ? n.t1 : n.t2}`, "rgba(0, 210, 255, 0.4)");
+            }
+            
+            startT();
+        }
+
+        function updateNotice(t, c) { let o = document.getElementById('status-notice'); o.innerText = t; o.style.backgroundColor = c; }
+
+        function startT() {
+            clearInterval(interval);
+            interval = setInterval(() => {
+                tVal--; document.getElementById('timer').innerText = tVal;
+                if(tVal <= 0) {
+                    if(stage === 1) { 
+                        isDoubleActive = false;
+                        currPts = originalPoints;
+                        document.getElementById('double-status').classList.add('hidden');
+                        document.getElementById('btn-win1').classList.remove('hidden');
+                        document.getElementById('btn-win2').classList.remove('hidden');
+                        stage = 2; 
+                        tVal = 45; 
+                        updateNotice(`دور: ${turn === 1 ? n.t2 : n.t1}`, "rgba(212, 175, 55, 0.4)"); 
+                    }
+                    else if(stage === 2) { 
+                        stage = 3; 
+                        tVal = 30; 
+                        updateNotice("📢 الوقت للجميع!", "rgba(255, 71, 87, 0.4)"); 
+                    }
+                    else { 
+                        clearInterval(interval); 
+                        showAns(); 
+                    }
+                }
+            }, 1000);
+        }
+
+        function showAns() {
+            clearInterval(interval);
+            document.getElementById('ans-box').classList.remove('hidden');
+            document.getElementById('reveal-btn').classList.add('hidden');
+            setTimeout(() => { document.getElementById('win-tools').classList.remove('hidden'); }, 500);
+        }
+
+        function endQ(w) {
+            if(w === 1) s.t1 += currPts;
+            if(w === 2) s.t2 += currPts;
+            updateScores();
+            if(lastBtn) { lastBtn.disabled = true; answeredQ++; }
+            isDoubleActive = false;
+            document.getElementById('double-status').classList.add('hidden');
+            turn = turn === 1 ? 2 : 1;
+            updateTurn();
+            document.getElementById('q-modal').classList.add('hidden');
+            if(answeredQ === totalQ) checkWinner();
+        }
+
+        function manualAdj(t, v) {
+            if(t === 1) s.t1 = Math.max(0, s.t1 + v);
+            else s.t2 = Math.max(0, s.t2 + v);
+            updateScores();
+        }
+
+        function updateScores() {
+            document.getElementById('s1').innerText = s.t1;
+            document.getElementById('s2').innerText = s.t2;
+        }
+
+        function checkWinner() {
+            let win = s.t1 > s.t2 ? n.t1 : (s.t2 > s.t1 ? n.t2 : "تعادل!");
+            document.getElementById('winner-name').innerText = win;
+            document.getElementById('win-modal').classList.remove('hidden');
+            document.getElementById('win-video').play();
+        }
+    </script>
+</body>
+</html>
