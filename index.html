@@ -112,37 +112,10 @@
             margin-right: auto;
         }
 		
-		/* تنسيق شاشة الترحيب */
-#splash-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000; /* خلفية سوداء */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999; /* للتأكد أنها فوق كل شيء */
-    transition: opacity 0.5s ease;
-}
 
-#splash-screen img {
-    width: 300px; /* العرض */
-    height: 300px; /* الطول لجعلها مربعة */
-    object-fit: cover;
-    border: 3px solid var(--gold);
-    border-radius: 20px;
-    box-shadow: 0 0 20px var(--gold);
-}
     </style>
 </head>
 <body>
-
-<div id="splash-screen">
-    <img src="https://i.postimg.cc/4dWhNjwD/tsjyl-(2)-png3.png" alt="Welcome">
-</div>
-
     <div id="name-alert" class="hidden">
         <img src="https://i.pinimg.com/736x/df/fb/52/dffb5291e1a7731331329496677fe8f1.jpg">
         <p>لاهنت حط اسم الفريق</p>
@@ -180,6 +153,40 @@
                 </div>
             </div>
 			
+			
+			        <div class="grid-container">
+            <div class="category-row">
+                <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'وش المكان هذا ؟', 'بقالة راشد', 200, 'https://i.postimg.cc/3rFGSyHj/image-png3333113.png')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'بيت مين ؟', 'بيت جمال ال حرشان', 300, 'https://i.postimg.cc/fytvXDJP/image-png3333333333333.png')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'في اي عام هذي الصوره ؟', '2003', 600, 'https://i.postimg.cc/pXBt5Cvs/22222.png')">600</button>
+                </div>
+<div class="center-card">
+    <img src="https://i.postimg.cc/bwdFY9wL/swrh-4.png" alt="الحاره" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
+    <p>الحاره</p>
+</div>                 <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'أي عام ؟', '2018', 200, 'https://i.postimg.cc/6q8Nv2rS/image-png333.png')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'وش المكان هذا ؟', 'محطة جوري', 300, 'https://i.postimg.cc/2ybP6pYg/1313131134.png')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'بيت مين ؟', 'بيت عيدان', 600, 'https://i.postimg.cc/D0wwYwqg/image-png33333.png')">600</button>
+                </div>
+            </div>
+			
+						        <div class="grid-container">
+            <div class="category-row">
+                <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'خرج تاركًا وراءه قومه متجهًا إلى شاطئ البحر، فوجد قومًا على متن سفينة مستعدون للإبحار، فطلب من هؤلاء القوم أن يأخذوه معهم على سطح السفينة في رحلتهم، فتوسم هؤلاء القوم فيها الصلاح ووافقوا على اصطحابه معهم على سطح سفينتهم، وبدؤوا في الإبحار', 'يونس عليه السلام', 200, 'https://i.pinimg.com/736x/cb/23/86/cb23866b3786cab698386c9bb9c173d8.jpg')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'قد تكون قصته في القرآن الكريم من أكثر الروايات تفصيلاً عن حياة نبي. يرمز إلى الجمال، ويُعتبر داعيةً للإسلام ملتزماً بالله بشدة، ويسعى إلى هداية الناس إلى طريق الحق', 'يوسف عليه السلام', 300, 'https://i.pinimg.com/1200x/50/47/49/504749bec5a0909c3809a93b74d66bfb.jpg')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'من هو النبي الذي صبر ٤٠ سنة؟', 'أيوب عليه السلام', 600, 'https://i.pinimg.com/736x/b5/e8/19/b5e8194ed80754077472c054b6e06629.jpg')">600</button>
+                </div>
+<div class="center-card">
+    <img src="https://i.pinimg.com/736x/cb/23/86/cb23866b3786cab698386c9bb9c173d8.jpg" alt="اسئلة دينية" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
+    <p>اسئلة دينية</p>
+</div>                 <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'ترك- بلده، وهاجر وقد سأل الله -تعالى- أن يهب له ولداً صالحاً، وكان يبلغ من العمر في وقتها ستّاً وثمانين عاماً؛ فبشّره الله -تعالى- بغلامٍ حليم، وذكر ذلك في قوله -تعالى-: (فَبَشَّرْنَاهُ بِغُلَامٍ حَلِيمٍ)؛فرزقه الله -تعالى- بأوّل ولد له؛ أي ببكره إسماعيل -عليه السلام', 'إبراهيم -عليه السلام', 200, 'https://i.pinimg.com/736x/45/ea/e4/45eae4b1fd390dee0484ba043985c15f.jpg')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'لعلّ من أكثر القصص المؤثرة في القرآن الكريم . رجلٌ ذو إيمانٍ عظيم، ابتُلي بمصائب عظيمة، ففقد صحته وماله، بل وحتى أبناءه. ومع ذلك، لم يتزعزع صبر طوال هذه المحنة، بل ظلّ ثابتاً، متوكلاً على الله في العزاء والهداية', 'أيوب عليه السلام', 300, 'https://i.pinimg.com/736x/96/77/66/967766c92ab6420e418b202f9425e4d7.jpg')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'من هو النبي الذي أمطرت له السماء ذهباً؟', 'أيوب عليه السلام', 600, 'https://i.pinimg.com/1200x/89/bb/35/89bb35cdbf6bda8cf9f5bc3781e9c569.jpg')">600</button>
+                </div>
+            </div>
 			
 			        <div class="grid-container">
             <div class="category-row">
@@ -443,16 +450,6 @@
             document.getElementById('win-video').play();
         }
 		
-		// إخفاء شاشة الترحيب بعد 10 ثوانٍ
-window.addEventListener('load', function() {
-    setTimeout(function() {
-        const splash = document.getElementById('splash-screen');
-        splash.style.opacity = '0';
-        setTimeout(() => {
-            splash.style.display = 'none';
-        }, 500); // وقت إضافي بسيط عشان حركة التلاشي (Fade out)
-    }, 10000); // 10000 ميلي ثانية تعني 10 ثواني
-});
 
     </script>
 </body>
