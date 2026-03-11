@@ -26,6 +26,23 @@
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
 
+        /* تنسيق زر ملء الشاشة الجديد */
+        #fullscreen-btn {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 9999;
+            background: var(--gold);
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
         .container {
             width: 95%; max-width: 1100px; background: var(--card);
             padding: 25px; border-radius: 20px; margin: 30px auto;
@@ -100,7 +117,6 @@
         #win-video { width: 320px; border-radius: 15px; border: 2px solid var(--gold); margin-top: 15px; }
         #call-timer-box { font-size: 3rem; color: var(--blue); font-weight: bold; margin: 20px 0; }
         
-        /* تنسيق صورة السؤال الجديد */
         #q-image {
             max-width: 100%;
             max-height: 250px;
@@ -111,11 +127,16 @@
             margin-left: auto;
             margin-right: auto;
         }
-		
-
     </style>
 </head>
 <body>
+
+    <button id="fullscreen-btn" onclick="toggleFullscreen()" title="وضع ملء الشاشة">
+        <svg id="fs-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        </svg>
+    </button>
+
     <div id="name-alert" class="hidden">
         <img src="https://i.pinimg.com/736x/df/fb/52/dffb5291e1a7731331329496677fe8f1.jpg">
         <p>لاهنت حط اسم الفريق</p>
@@ -143,62 +164,62 @@
                     <button class="btn-points" onclick="openQ(this, 'ما هو الشيء الذي يدعى باهون وموجود دائمًا في الحياة لكنّه أغلى شيء يمكن أن نفقده؟', 'الماء', 300, 'https://i.pinimg.com/1200x/73/bd/37/73bd3720e171558d365c61a7e9ee8494.jpg')">300</button>
                     <button class="btn-points" onclick="openQ(this, 'ما هو الشيء الذي يمشي دون أن يمتلك قدمين، ويستطيع الطير دون أن يمتلك جناحين، ويبكي أيضًا دون أن يملك عينين؟', 'الغيوم', 600, 'https://modo3.com/thumbs/fit630x300/257068/1687675824/%D8%A3%D8%B3%D8%A6%D9%84%D8%A9_%D8%B0%D9%83%D8%A7%D8%A1_%D8%B9%D8%A7%D9%85%D8%A9.jpg')">600</button>
                 </div>
-<div class="center-card">
-    <img src="https://modo3.com/thumbs/fit630x300/257068/1687675824/%D8%A3%D8%B3%D8%A6%D9%84%D8%A9_%D8%B0%D9%83%D8%A7%D8%A1_%D8%B9%D8%A7%D9%85%D8%A9.jpg" alt="أسئلة ذكاء عامة" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
-    <p>أسئلة ذكاء عامة</p>
-</div>                 <div style="display:flex; flex-direction:column">
+                <div class="center-card">
+                    <img src="https://modo3.com/thumbs/fit630x300/257068/1687675824/%D8%A3%D8%B3%D8%A6%D9%84%D8%A9_%D8%B0%D9%83%D8%A7%D8%A1_%D8%B9%D8%A7%D9%85%D8%A9.jpg" alt="أسئلة ذكاء عامة">
+                    <p>أسئلة ذكاء عامة</p>
+                </div>
+                <div style="display:flex; flex-direction:column">
                     <button class="btn-points" onclick="openQ(this, 'أين توجد حاسة الشم لدى الثعبان؟', 'في لسانه', 200, 'https://i.pinimg.com/736x/02/04/3c/02043c9410f41393db145ceb170360bf.jpg')">200</button>
                     <button class="btn-points" onclick="openQ(this, 'ما هو الشيء الذي يدور في البيت دون أن يتحرك من مكانه مطلقًا؟', 'الحائط', 300, 'https://i.pinimg.com/1200x/0a/7a/e4/0a7ae402b6a4904b29dbc7a6f72b8b78.jpg')">300</button>
                     <button class="btn-points" onclick="openQ(this, 'ما هو الشيء الذي لديه الكثير من الأسنان لكنه لا يمكنه عض أحد؟', 'المشط', 600, 'https://i.pinimg.com/736x/56/98/f8/5698f841bb0bc9c03beff89209ea2526.jpg')">600</button>
                 </div>
             </div>
-			
-			
-			        <div class="grid-container">
+
             <div class="category-row">
                 <div style="display:flex; flex-direction:column">
                     <button class="btn-points" onclick="openQ(this, 'وش المكان هذا ؟', 'بقالة راشد', 200, 'https://i.postimg.cc/3rFGSyHj/image-png3333113.png')">200</button>
                     <button class="btn-points" onclick="openQ(this, 'بيت مين ؟', 'بيت جمال ال حرشان', 300, 'https://i.postimg.cc/fytvXDJP/image-png3333333333333.png')">300</button>
                     <button class="btn-points" onclick="openQ(this, 'في اي عام هذي الصوره ؟', '2003', 600, 'https://i.postimg.cc/pXBt5Cvs/22222.png')">600</button>
                 </div>
-<div class="center-card">
-    <img src="https://i.postimg.cc/bwdFY9wL/swrh-4.png" alt="الحاره" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
-    <p>الحاره</p>
-</div>                 <div style="display:flex; flex-direction:column">
+                <div class="center-card">
+                    <img src="https://i.postimg.cc/bwdFY9wL/swrh-4.png" alt="الحاره">
+                    <p>الحاره</p>
+                </div>
+                <div style="display:flex; flex-direction:column">
                     <button class="btn-points" onclick="openQ(this, 'أي عام ؟', '2018', 200, 'https://i.postimg.cc/6q8Nv2rS/image-png333.png')">200</button>
                     <button class="btn-points" onclick="openQ(this, 'وش المكان هذا ؟', 'محطة جوري', 300, 'https://i.postimg.cc/2ybP6pYg/1313131134.png')">300</button>
                     <button class="btn-points" onclick="openQ(this, 'بيت مين ؟', 'بيت عيدان', 600, 'https://i.postimg.cc/D0wwYwqg/image-png33333.png')">600</button>
                 </div>
             </div>
-			
-						        <div class="grid-container">
+
             <div class="category-row">
                 <div style="display:flex; flex-direction:column">
-                    <button class="btn-points" onclick="openQ(this, 'خرج تاركًا وراءه قومه متجهًا إلى شاطئ البحر، فوجد قومًا على متن سفينة مستعدون للإبحار، فطلب من هؤلاء القوم أن يأخذوه معهم على سطح السفينة في رحلتهم، فتوسم هؤلاء القوم فيها الصلاح ووافقوا على اصطحابه معهم على سطح سفينتهم، وبدؤوا في الإبحار', 'يونس عليه السلام', 200, 'https://i.pinimg.com/736x/cb/23/86/cb23866b3786cab698386c9bb9c173d8.jpg')">200</button>
-                    <button class="btn-points" onclick="openQ(this, 'قد تكون قصته في القرآن الكريم من أكثر الروايات تفصيلاً عن حياة نبي. يرمز إلى الجمال، ويُعتبر داعيةً للإسلام ملتزماً بالله بشدة، ويسعى إلى هداية الناس إلى طريق الحق', 'يوسف عليه السلام', 300, 'https://i.pinimg.com/1200x/50/47/49/504749bec5a0909c3809a93b74d66bfb.jpg')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'من النبي الذي التقمه الحوت؟', 'يونس عليه السلام', 200, 'https://i.pinimg.com/736x/cb/23/86/cb23866b3786cab698386c9bb9c173d8.jpg')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'نبي يرمز للجمال؟', 'يوسف عليه السلام', 300, 'https://i.pinimg.com/1200x/50/47/49/504749bec5a0909c3809a93b74d66bfb.jpg')">300</button>
                     <button class="btn-points" onclick="openQ(this, 'من هو النبي الذي صبر ٤٠ سنة؟', 'أيوب عليه السلام', 600, 'https://i.pinimg.com/736x/b5/e8/19/b5e8194ed80754077472c054b6e06629.jpg')">600</button>
                 </div>
-<div class="center-card">
-    <img src="https://i.pinimg.com/736x/cb/23/86/cb23866b3786cab698386c9bb9c173d8.jpg" alt="اسئلة دينية" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
-    <p>اسئلة دينية</p>
-</div>                 <div style="display:flex; flex-direction:column">
-                    <button class="btn-points" onclick="openQ(this, 'ترك- بلده، وهاجر وقد سأل الله -تعالى- أن يهب له ولداً صالحاً، وكان يبلغ من العمر في وقتها ستّاً وثمانين عاماً؛ فبشّره الله -تعالى- بغلامٍ حليم، وذكر ذلك في قوله -تعالى-: (فَبَشَّرْنَاهُ بِغُلَامٍ حَلِيمٍ)؛فرزقه الله -تعالى- بأوّل ولد له؛ أي ببكره إسماعيل -عليه السلام', 'إبراهيم -عليه السلام', 200, 'https://i.pinimg.com/736x/45/ea/e4/45eae4b1fd390dee0484ba043985c15f.jpg')">200</button>
-                    <button class="btn-points" onclick="openQ(this, 'لعلّ من أكثر القصص المؤثرة في القرآن الكريم . رجلٌ ذو إيمانٍ عظيم، ابتُلي بمصائب عظيمة، ففقد صحته وماله، بل وحتى أبناءه. ومع ذلك، لم يتزعزع صبر طوال هذه المحنة، بل ظلّ ثابتاً، متوكلاً على الله في العزاء والهداية', 'أيوب عليه السلام', 300, 'https://i.pinimg.com/736x/96/77/66/967766c92ab6420e418b202f9425e4d7.jpg')">300</button>
-                    <button class="btn-points" onclick="openQ(this, 'من هو النبي الذي أمطرت له السماء ذهباً؟', 'أيوب عليه السلام', 600, 'https://i.pinimg.com/1200x/89/bb/35/89bb35cdbf6bda8cf9f5bc3781e9c569.jpg')">600</button>
+                <div class="center-card">
+                    <img src="https://i.pinimg.com/736x/cb/23/86/cb23866b3786cab698386c9bb9c173d8.jpg" alt="اسئلة دينية">
+                    <p>اسئلة دينية</p>
+                </div>
+                <div style="display:flex; flex-direction:column">
+                    <button class="btn-points" onclick="openQ(this, 'من هو خليل الله؟', 'إبراهيم عليه السلام', 200, 'https://i.pinimg.com/736x/45/ea/e4/45eae4b1fd390dee0484ba043985c15f.jpg')">200</button>
+                    <button class="btn-points" onclick="openQ(this, 'من هو النبي الملقب بالصابر؟', 'أيوب عليه السلام', 300, 'https://i.pinimg.com/736x/96/77/66/967766c92ab6420e418b202f9425e4d7.jpg')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'نبي أمطرت له السماء ذهباً؟', 'أيوب عليه السلام', 600, 'https://i.pinimg.com/1200x/89/bb/35/89bb35cdbf6bda8cf9f5bc3781e9c569.jpg')">600</button>
                 </div>
             </div>
-			
-			        <div class="grid-container">
+
             <div class="category-row">
                 <div style="display:flex; flex-direction:column">
                     <button class="btn-points" onclick="openQ(this, 'إن غاب القط ؟', 'العب يا فار', 200, 'https://i.pinimg.com/736x/b1/0c/6e/b10c6e9ae42bc2e301a531659c0093b1.jpg')">200</button>
                     <button class="btn-points" onclick="openQ(this, 'الجار قبل ؟', 'الدار', 300, 'https://i.pinimg.com/736x/9d/36/87/9d368706d8d6dbe195671325c0ff5316.jpg')">300</button>
                     <button class="btn-points" onclick="openQ(this, 'سيل ما يبلك ؟', 'لا يهمك', 600, 'https://i.pinimg.com/1200x/ee/25/9e/ee259eb4a9a67d7c2cef9ea2b2d31730.jpg')">600</button>
                 </div>
-<div class="center-card">
-    <img src="https://cdn.arabsstock.com/uploads/images/69986/saudi-arabian-gulf-man-business-thumbnail-69986.webp" alt="أمثال شعبية" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
-    <p>أمثال شعبية</p>
-</div>                 <div style="display:flex; flex-direction:column">
+                <div class="center-card">
+                    <img src="https://cdn.arabsstock.com/uploads/images/69986/saudi-arabian-gulf-man-business-thumbnail-69986.webp" alt="أمثال شعبية">
+                    <p>أمثال شعبية</p>
+                </div>
+                <div style="display:flex; flex-direction:column">
                     <button class="btn-points" onclick="openQ(this, 'القرد بعين ؟', 'بعين أمه غزال', 200, 'https://i.pinimg.com/736x/e6/0c/16/e60c16c69fc177a0fef226b277ba7b46.jpg')">200</button>
                     <button class="btn-points" onclick="openQ(this, 'الرجال مخابر ؟', 'ما هي بمناظر', 300, 'https://i.pinimg.com/736x/0f/8f/73/0f8f732b180a54f3ebe71b9c16c90b73.jpg')">300</button>
                     <button class="btn-points" onclick="openQ(this, 'سم الرجاجييل بأساميها ؟', 'لا تأكـلك بأثاميها', 600, 'https://i.pinimg.com/736x/56/a1/1b/56a11b56dc1a084ee2215c35b15632fc.jpg')">600</button>
@@ -208,16 +229,17 @@
             <div class="category-row">
                 <div style="display:flex; flex-direction:column">
                     <button class="btn-points" onclick="openQ(this, 'مكان مين ؟', 'استراحة ابوحسام', 200, 'https://i.postimg.cc/4ysdRPzX/mkan-myn.png')">200</button>
-                    <button class="btn-points" onclick="openQ(this, 'متى تم بناء عزبة ابو سلطان السنافي اي عام ؟', '2017', 300, 'https://i.postimg.cc/4xSmHzTV/mty-tm-bnaʾ-ʿzbt-abw-sltan-alsnafy-ay-ʿam.png')">300</button>
+                    <button class="btn-points" onclick="openQ(this, 'متى تم بناء عزبة ابو سلطان السنافي ؟', '2017', 300, 'https://i.postimg.cc/4xSmHzTV/mty-tm-bna\u02be-\u02bfzbt-abw-sltan-alsnafy-ay-\u02bfam.png')">300</button>
                     <button class="btn-points" onclick="openQ(this, 'في اي عام هذي الصوره في المزرعه ؟', '2011', 600, 'https://files.catbox.moe/oye0at.png')">600</button>
                 </div>
-<div class="center-card">
-    <img src="https://i.postimg.cc/bvVHJG6f/instc-2025-09-25-060129-982-jpg333333333333333333333.jpg" alt="المزرعه" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
-    <p>المزرعه</p>
-</div>                <div style="display:flex; flex-direction:column">
+                <div class="center-card">
+                    <img src="https://i.postimg.cc/bvVHJG6f/instc-2025-09-25-060129-982-jpg333333333333333333333.jpg" alt="المزرعه">
+                    <p>المزرعه</p>
+                </div>
+                <div style="display:flex; flex-direction:column">
                     <button class="btn-points" onclick="openQ(this, 'مكان مين ؟', 'استراحة ابومجاهد', 200, 'https://i.postimg.cc/7hkCYwyZ/astraht-abwmjahd.png')">200</button>
                     <button class="btn-points" onclick="openQ(this, 'متى تم بناء الشارع اي عام ؟', '2014', 300, 'https://files.catbox.moe/uf84eo.png')">300</button>
-                    <button class="btn-points" onclick="openQ(this, 'في اي عام هذي الصوره في المزرعه ؟', '2003', 600, 'https://files.catbox.moe/rvoshp.png')">600</button>
+                    <button class="btn-points" onclick="openQ(this, 'في اي عام هذي الصوره ؟', '2003', 600, 'https://files.catbox.moe/rvoshp.png')">600</button>
                 </div>
             </div>
         </div>
@@ -229,10 +251,10 @@
                 <div class="score-btns">
                     <button class="btn-plus" onclick="manualAdj(1, 200)">+</button>
                     <button class="btn-minus" onclick="manualAdj(1, -200)">-</button>
-                    <button id="call1" class="btn-help" title="اتصال بصديق" onclick="useCall(1)">
-                        <img src="https://files.catbox.moe/bwn2ng.png" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+                    <button id="call1" class="btn-help" onclick="useCall(1)">
+                        <img src="https://files.catbox.moe/bwn2ng.png" style="width: 35px; height: 35px; border-radius: 50%;">
                     </button>
-                    <button id="double1" class="btn-help" title="تدبيل" onclick="useDouble(1)">
+                    <button id="double1" class="btn-help" onclick="useDouble(1)">
                         <img src="https://files.catbox.moe/eq7djd.png" style="width: 70px; height: 35px; object-fit: contain;">
                     </button>
                 </div>
@@ -244,10 +266,10 @@
                 <div class="score-btns">
                     <button class="btn-plus" onclick="manualAdj(2, 200)">+</button>
                     <button class="btn-minus" onclick="manualAdj(2, -200)">-</button>
-                    <button id="call2" class="btn-help" title="اتصال بصديق" onclick="useCall(2)">
-                        <img src="https://files.catbox.moe/bwn2ng.png" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+                    <button id="call2" class="btn-help" onclick="useCall(2)">
+                        <img src="https://files.catbox.moe/bwn2ng.png" style="width: 35px; height: 35px; border-radius: 50%;">
                     </button>
-                    <button id="double2" class="btn-help" title="تدبيل" onclick="useDouble(2)">
+                    <button id="double2" class="btn-help" onclick="useDouble(2)">
                         <img src="https://files.catbox.moe/eq7djd.png" style="width: 70px; height: 35px; object-fit: contain;">
                     </button>
                 </div>
@@ -257,7 +279,7 @@
 
     <div id="call-modal" class="modal hidden">
         <div class="modal-content">
-            <h2 style="color: var(--blue);">📞 جارٍ الاتصال بصديق...</h2>
+            <h2>📞 جارٍ الاتصال بصديق...</h2>
             <div id="call-timer-box">30</div>
             <button class="btn-action" style="background: #e74c3c; color: #fff;" onclick="endCall()">إنهاء المكالمة</button>
         </div>
@@ -268,9 +290,7 @@
             <div id="status-notice" style="padding:10px; border-radius:10px; margin-bottom:15px;">📢</div>
             <div id="timer" style="font-size:3.5rem; color:#e74c3c; font-weight: bold;">45</div>
             <h3 id="q-text" style="font-size: 1.6rem; margin: 15px 0;">السؤال؟</h3>
-            
             <img id="q-image" src="" class="hidden">
-
             <div id="ans-box" class="hidden" style="background:#000; padding:15px; border-radius:15px; border:1px solid var(--gold);">
                 <strong id="correct-ans" style="color: var(--gold); font-size: 1.5rem;"></strong>
             </div>
@@ -300,6 +320,19 @@
         let totalQ = 0, answeredQ = 0, isDoubleActive = false, originalPoints = 0;
         let usedTools = { t1Call: false, t1Double: false, t2Call: false, t2Double: false };
 
+        // دالة ملء الشاشة
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`خطأ في تفعيل ملء الشاشة: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
         function startGame() {
             let i1 = document.getElementById('t1-in').value.trim();
             let i2 = document.getElementById('t2-in').value.trim();
@@ -319,8 +352,7 @@
         function updateTurn() { document.getElementById('turn-display').innerText = turn === 1 ? n.t1 : n.t2; }
 
         function useDouble(team) {
-            if(team !== turn) return;
-            if(usedTools[`t${team}Double`]) return;
+            if(team !== turn || usedTools[`t${team}Double`]) return;
             isDoubleActive = true;
             usedTools[`t${team}Double`] = true;
             document.getElementById(`double${team}`).disabled = true;
@@ -343,7 +375,6 @@
 
         function endCall() { clearInterval(callInterval); document.getElementById('call-modal').classList.add('hidden'); }
 
-        // تم تحديث الدالة لتقبل رابط الصورة imgUrl
         function openQ(btn, q, a, p, imgUrl) {
             if(btn.disabled) return;
             lastBtn = btn; 
@@ -353,13 +384,11 @@
             document.getElementById('q-text').innerText = q;
             document.getElementById('correct-ans').innerText = a;
             
-            // التعامل مع الصورة
             const imgElement = document.getElementById('q-image');
             if(imgUrl && imgUrl.trim() !== "") {
                 imgElement.src = imgUrl;
                 imgElement.classList.remove('hidden');
             } else {
-                imgElement.src = "";
                 imgElement.classList.add('hidden');
             }
 
@@ -367,18 +396,16 @@
             document.getElementById('ans-box').classList.add('hidden');
             document.getElementById('win-tools').classList.add('hidden');
             document.getElementById('reveal-btn').classList.remove('hidden');
-            
             document.getElementById('btn-win1').classList.remove('hidden');
             document.getElementById('btn-win2').classList.remove('hidden');
             
             if(isDoubleActive) {
-                updateNotice(` الجواب فقط لـ: ${turn === 1 ? n.t1 : n.t2}`, "rgba(255, 71, 87, 0.6)");
+                updateNotice(` الجواب لـ: ${turn === 1 ? n.t1 : n.t2}`, "rgba(255, 71, 87, 0.6)");
                 if(turn === 1) document.getElementById('btn-win2').classList.add('hidden');
                 else document.getElementById('btn-win1').classList.add('hidden');
             } else {
                 updateNotice(`دور: ${turn === 1 ? n.t1 : n.t2}`, "rgba(0, 210, 255, 0.4)");
             }
-            
             startT();
         }
 
@@ -395,19 +422,14 @@
                         document.getElementById('double-status').classList.add('hidden');
                         document.getElementById('btn-win1').classList.remove('hidden');
                         document.getElementById('btn-win2').classList.remove('hidden');
-                        stage = 2; 
-                        tVal = 45; 
+                        stage = 2; tVal = 45; 
                         updateNotice(`دور: ${turn === 1 ? n.t2 : n.t1}`, "rgba(212, 175, 55, 0.4)"); 
                     }
                     else if(stage === 2) { 
-                        stage = 3; 
-                        tVal = 30; 
+                        stage = 3; tVal = 30; 
                         updateNotice("📢 الوقت للجميع!", "rgba(255, 71, 87, 0.4)"); 
                     }
-                    else { 
-                        clearInterval(interval); 
-                        showAns(); 
-                    }
+                    else { clearInterval(interval); showAns(); }
                 }
             }, 1000);
         }
@@ -449,8 +471,6 @@
             document.getElementById('win-modal').classList.remove('hidden');
             document.getElementById('win-video').play();
         }
-		
-
     </script>
 </body>
 </html>
